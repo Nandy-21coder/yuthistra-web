@@ -1,6 +1,419 @@
 console.log(firebase);
 const API_BASE_URL = 'https://nandha-backend-6azag5bue-raghavan-18s-projects.vercel.app';
 
+window.currentResultLanguage = 'en';
+
+window.translateTanglishText = function (text) {
+    if (!text || typeof text !== 'string') return text;
+    
+    let result = text;
+    
+    // 1. Direct Tanglish Word Replacements
+    const wordMap = {
+        'Karichal': 'கரிசல் மண்',
+        'Vandhal': 'வண்டல் மண்',
+        'Semman': 'செம்மண்',
+        'Manal': 'மணல் மண்',
+        'Loamy': 'இருவாட்டி மண்',
+        'Mazhai Kaalam': 'மழைக்காலம்',
+        'MazhaiKaalam': 'மழைக்காலம்',
+        'Pani Kaalam': 'குளிர்காலம்',
+        'PaniKaalam': 'குளிர்காலம்',
+        'Veiyil Kaalam': 'கோடைகாலம்',
+        'VeiyilKaalam': 'கோடைகாலம்',
+        'Nilakkadalai': 'நிலக்கடலை',
+        'Kadugu': 'கடுகு',
+        'Suryagandhi': 'சூரியகாந்தி',
+        'Ellu': 'எள்',
+        'Kusuma': 'குசும்பா',
+        'Uchellu': 'உச்செள்',
+        'Amanakku': 'ஆமணக்கு',
+        'Alivithai': 'ஆளிவிதை'
+    };
+    
+    for (const [tanglish, tamil] of Object.entries(wordMap)) {
+        const regex = new RegExp(tanglish, 'gi');
+        result = result.replace(regex, tamil);
+    }
+    
+    // 2. Format English options (if they don't already have Tamil in brackets)
+    // Crop translations
+    const cropTranslations = {
+        'Groundnut': 'நிலக்கடலை',
+        'Mustard': 'கடுகு',
+        'Soybean': 'சோயாபீன்ஸ்',
+        'Sunflower': 'சூரியகாந்தி',
+        'Sesame': 'எள்',
+        'Safflower': 'குசும்பா',
+        'Niger seed': 'உச்செள்',
+        'Castor seed': 'ஆமணக்கு',
+        'Linseed': 'ஆளிவிதை'
+    };
+    
+    // Soil translations
+    const soilTranslations = {
+        'Black Soil': 'கரிசல் மண்',
+        'Alluvial Soil': 'வண்டல் மண்',
+        'Red Soil': 'செம்மண்',
+        'Sandy Soil': 'மணல் மண்',
+        'Loamy Soil': 'இருவாட்டி மண்'
+    };
+    
+    // Season translations
+    const seasonTranslations = {
+        'Kharif': 'மழைக்காலம்',
+        'Rabi': 'குளிர்காலம்',
+        'Zaid': 'கோடைகாலம்',
+        'Rainy': 'மழைக்காலம்',
+        'Winter': 'குளிர்காலம்',
+        'Summer': 'கோடைகாலம்'
+    };
+
+    // Weather translations
+    const weatherTranslations = {
+        'Cool': 'குளிர்ச்சியான',
+        'Cold': 'குளிர்ச்சியான',
+        'Pleasant': 'இதமான / சாதாரண',
+        'Normal': 'இதமான / சாதாரண',
+        'Hot': 'வெப்பமான',
+        'Very Warm': 'வெப்பமான'
+    };
+
+    // Water translations
+    const waterTranslations = {
+        'Low': 'குறைந்த நீர்ப்பாசனம் / மானாவாரி',
+        'Medium': 'பகுதி நீர்ப்பாசனம்',
+        'High': 'நன்கு நீர்ப்பாசனம்'
+    };
+
+    // Soil fertility translations
+    const fertilityTranslations = {
+        'Poor': 'நலிந்த மண் / உரம் தேவை',
+        'Average': 'சராசரி மண் வளம்',
+        'Rich': 'செழிப்பான மண் வளம்'
+    };
+
+    // Apply fallback translation if only English name is present without Tamil script
+    const hasTamil = /[\u0b80-\u0bff]/.test(result);
+    if (!hasTamil) {
+        // Check crops
+        for (const [eng, tamil] of Object.entries(cropTranslations)) {
+            if (result.toLowerCase() === eng.toLowerCase()) {
+                return `${eng} (${tamil})`;
+            }
+        }
+        // Check soils
+        for (const [eng, tamil] of Object.entries(soilTranslations)) {
+            if (result.toLowerCase() === eng.toLowerCase()) {
+                return `${eng} (${tamil})`;
+            }
+        }
+        // Check seasons
+        for (const [eng, tamil] of Object.entries(seasonTranslations)) {
+            if (result.toLowerCase() === eng.toLowerCase()) {
+                return `${eng} (${tamil})`;
+            }
+        }
+        // Check weather
+        for (const [eng, tamil] of Object.entries(weatherTranslations)) {
+            if (result.toLowerCase() === eng.toLowerCase()) {
+                return `${eng} (${tamil})`;
+            }
+        }
+        // Check water
+        for (const [eng, tamil] of Object.entries(waterTranslations)) {
+            if (result.toLowerCase() === eng.toLowerCase()) {
+                return `${eng} (${tamil})`;
+            }
+        }
+        // Check fertility
+        for (const [eng, tamil] of Object.entries(fertilityTranslations)) {
+            if (result.toLowerCase() === eng.toLowerCase()) {
+                return `${eng} (${tamil})`;
+            }
+        }
+    }
+    
+    return result;
+};
+
+window.cropDatabase = {
+    "Groundnut": {
+        nameEng: "Groundnut",
+        nameTam: "நிலக்கடலை",
+        fullName: "Groundnut (Nilakkadalai)",
+        preferredSoils: ["Sandy Soil", "Red Soil", "Loamy Soil"],
+        preferredSeasons: ["Rainy", "Summer"],
+        preferredWater: ["Medium", "High"],
+        preferredWeather: ["Pleasant", "Hot"],
+        basePrice: 7200,
+        baseYield: 1.2,
+        adviceTam: [
+            "பூக்கும் காலத்தில் போதுமான நீர்ப்பாசனம் வழங்கவும்.",
+            "இலைப்புள்ளி நோயை கண்காணிக்கவும்."
+        ],
+        adviceEng: [
+            "Provide adequate irrigation during flowering.",
+            "Monitor leaf spot disease."
+        ]
+    },
+    "Mustard": {
+        nameEng: "Mustard",
+        nameTam: "கடுகு",
+        fullName: "Mustard (Kadugu)",
+        preferredSoils: ["Loamy Soil", "Alluvial Soil", "Sandy Soil"],
+        preferredSeasons: ["Winter"],
+        preferredWater: ["Medium"],
+        preferredWeather: ["Cool"],
+        basePrice: 5800,
+        baseYield: 0.8,
+        adviceTam: [
+            "அஃபிட் தாக்குதலை கண்காணிக்கவும்.",
+            "சீரான ஊட்டச்சத்து மேலாண்மையை பின்பற்றவும்."
+        ],
+        adviceEng: [
+            "Monitor aphid attacks.",
+            "Follow balanced nutrient management."
+        ]
+    },
+    "Soybean": {
+        nameEng: "Soybean",
+        nameTam: "சோயாபீன்ஸ்",
+        fullName: "Soybean",
+        preferredSoils: ["Black Soil", "Loamy Soil", "Alluvial Soil"],
+        preferredSeasons: ["Rainy"],
+        preferredWater: ["Medium", "High"],
+        preferredWeather: ["Pleasant", "Hot"],
+        basePrice: 6500,
+        baseYield: 1.5,
+        adviceTam: [
+            "மண்ணின் ஈரப்பதத்தை பராமரிக்கவும்.",
+            "பூச்சி தாக்குதலை தொடர்ந்து கண்காணிக்கவும்."
+        ],
+        adviceEng: [
+            "Maintain soil moisture.",
+            "Monitor pest attacks continuously."
+        ]
+    },
+    "Sunflower": {
+        nameEng: "Sunflower",
+        nameTam: "சூரியகாந்தி",
+        fullName: "Sunflower (Suryagandhi)",
+        preferredSoils: ["Black Soil", "Loamy Soil", "Alluvial Soil", "Red Soil"],
+        preferredSeasons: ["Rainy", "Winter", "Summer"],
+        preferredWater: ["Medium", "High"],
+        preferredWeather: ["Pleasant", "Hot"],
+        basePrice: 6000,
+        baseYield: 1.0,
+        adviceTam: [
+            "வளர்ச்சி மற்றும் பூக்கும் நிலைகளில் போதுமான நீர் பாய்ச்சவும்.",
+            "பறவைகளின் சேதத்திலிருந்து பயிர்களைப் பாதுகாக்கவும்."
+        ],
+        adviceEng: [
+            "Provide adequate water during vegetative and flowering stages.",
+            "Protect crops from bird damage."
+        ]
+    },
+    "Sesame": {
+        nameEng: "Sesame",
+        nameTam: "எள்",
+        fullName: "Sesame (Ellu)",
+        preferredSoils: ["Sandy Soil", "Loamy Soil", "Red Soil"],
+        preferredSeasons: ["Summer", "Rainy"],
+        preferredWater: ["Low", "Medium"],
+        preferredWeather: ["Hot", "Pleasant"],
+        basePrice: 8900,
+        baseYield: 0.9,
+        adviceTam: [
+            "நீர் தேங்குவதைத் தவிர்க்கவும்.",
+            "ஆரம்ப நிலையில் களைகளை கட்டுப்படுத்தவும்."
+        ],
+        adviceEng: [
+            "Avoid waterlogging.",
+            "Control weeds at early stages."
+        ]
+    },
+    "Safflower": {
+        nameEng: "Safflower",
+        nameTam: "குசும்பா",
+        fullName: "Safflower (Kusuma)",
+        preferredSoils: ["Black Soil", "Loamy Soil"],
+        preferredSeasons: ["Winter"],
+        preferredWater: ["Low"],
+        preferredWeather: ["Pleasant"],
+        basePrice: 5500,
+        baseYield: 0.7,
+        adviceTam: [
+            "பூக்கும் தருணத்தில் அதிகப்படியான நீர்ப்பாசனத்தைத் தவிர்க்கவும்.",
+            "துரு நோய் தாக்குதலைத் தடுக்க தகுந்த முன்னெச்சரிக்கை நடவடிக்கைகளை எடுக்கவும்."
+        ],
+        adviceEng: [
+            "Avoid excess irrigation during flowering.",
+            "Take precautions against rust disease."
+        ]
+    },
+    "Niger seed": {
+        nameEng: "Niger seed",
+        nameTam: "உச்செள்",
+        fullName: "Niger seed (Uchellu)",
+        preferredSoils: ["Loamy Soil", "Red Soil", "Sandy Soil"],
+        preferredSeasons: ["Rainy"],
+        preferredWater: ["Low", "Medium"],
+        preferredWeather: ["Pleasant"],
+        basePrice: 6200,
+        baseYield: 0.6,
+        adviceTam: [
+            "பூக்கும் நேரத்தில் வறட்சி ஏற்படாமல் பார்த்துக்கொள்ளவும்.",
+            "முறையான களையெடுத்தல் மூலம் விளைச்சலை அதிகரிக்கவும்."
+        ],
+        adviceEng: [
+            "Ensure no drought during flowering.",
+            "Control weeds properly to increase yield."
+        ]
+    },
+    "Castor seed": {
+        nameEng: "Castor seed",
+        nameTam: "ஆமணக்கு",
+        fullName: "Castor seed (Amanakku)",
+        preferredSoils: ["Red Soil", "Sandy Soil", "Loamy Soil"],
+        preferredSeasons: ["Rainy", "Winter"],
+        preferredWater: ["Low", "Medium"],
+        preferredWeather: ["Hot", "Pleasant"],
+        basePrice: 6300,
+        baseYield: 1.1,
+        adviceTam: [
+            "காய்ப்புழு தாக்குதலைத் தடுக்க வாரந்தோறும் கண்காணிக்கவும்.",
+            "முறையான உர மேலாண்மை மூலம் காய்களின் எண்ணிக்கையை அதிகரிக்கலாம்."
+        ],
+        adviceEng: [
+            "Monitor weekly to prevent capsule borer attacks.",
+            "Use proper fertilizer management to increase capsule count."
+        ]
+    },
+    "Linseed": {
+        nameEng: "Linseed",
+        nameTam: "ஆளிவிதை",
+        fullName: "Linseed (Alivithai)",
+        preferredSoils: ["Alluvial Soil", "Black Soil", "Loamy Soil"],
+        preferredSeasons: ["Winter"],
+        preferredWater: ["Medium"],
+        preferredWeather: ["Cool"],
+        basePrice: 5600,
+        baseYield: 0.8,
+        adviceTam: [
+            "பயிர் வளர்ச்சி காலத்தில் ஈரப்பதம் சீராக இருப்பதை உறுதி செய்யவும்.",
+            "வாடல் நோய் பரவாமல் தடுக்க தகுந்த பூசணக்கொல்லியைப் பயன்படுத்தவும்."
+        ],
+        adviceEng: [
+            "Ensure consistent moisture during growth.",
+            "Use appropriate fungicide to prevent wilt disease."
+        ]
+    }
+};
+
+window.getCropMetrics = function (key, isPrimary = false) {
+    const crop = window.cropDatabase[key];
+    if (!crop) return null;
+
+    const soil_type = document.getElementById('crop_soil_type')?.value || "Black Soil";
+    const season = document.getElementById('crop_season')?.value || "Rainy";
+    const water = document.getElementById('crop_water')?.value || "Medium";
+    const health = document.getElementById('crop_health')?.value || "Average";
+    const weather = document.getElementById('crop_weather')?.value || "Pleasant";
+
+    // 1. Calculate Match %
+    let matchScore = 50;
+    
+    // Soil matching
+    if (crop.preferredSoils.includes(soil_type)) {
+        matchScore += 15;
+    } else if (soil_type.includes("Loamy") || soil_type.includes("Alluvial")) {
+        matchScore += 8;
+    }
+    
+    // Season matching
+    if (crop.preferredSeasons.includes(season)) {
+        matchScore += 15;
+    } else {
+        matchScore -= 5;
+    }
+    
+    // Water matching
+    if (crop.preferredWater.includes(water)) {
+        matchScore += 10;
+    } else if (water === "Medium") {
+        matchScore += 5;
+    }
+    
+    // Weather matching
+    if (crop.preferredWeather.includes(weather)) {
+        matchScore += 10;
+    } else if (weather === "Pleasant") {
+        matchScore += 5;
+    }
+    
+    // Fertility (Soil Health)
+    if (health === "Rich") {
+        matchScore += 10;
+    } else if (health === "Average") {
+        matchScore += 5;
+    } else if (health === "Poor") {
+        matchScore -= 10;
+    }
+    
+    // Add small random offset so scores aren't exactly identical for similar crops, and clamp
+    const randomOffset = Math.floor((Math.sin(key.charCodeAt(0)) + 1) * 3);
+    let accuracy = Math.max(40, Math.min(95, matchScore + randomOffset));
+    if (isPrimary && accuracy < 75) accuracy = 75 + (accuracy % 15);
+    
+    // 2. Calculate Yield (Tons/Acre)
+    let yieldFactor = 1.0;
+    
+    // Fertility impact
+    if (health === "Rich") yieldFactor *= 1.25;
+    else if (health === "Poor") yieldFactor *= 0.7;
+    
+    // Water impact
+    if (crop.preferredWater.includes("High") && water === "High") yieldFactor *= 1.1;
+    if (crop.preferredWater.includes("Low") && water === "High") yieldFactor *= 0.8;
+    if (crop.preferredWater.includes("High") && water === "Low") yieldFactor *= 0.6;
+    
+    // Weather impact
+    if (crop.preferredWeather.includes(weather)) yieldFactor *= 1.15;
+    else if (weather === "Hot" && crop.preferredWeather.includes("Cool")) yieldFactor *= 0.8;
+    
+    let expectedYieldVal = (crop.baseYield * yieldFactor).toFixed(2);
+    // Ensure variation and no repeating values
+    expectedYieldVal = (parseFloat(expectedYieldVal) + (key.length % 5) * 0.03).toFixed(1);
+    const expected_yield = `${expectedYieldVal} Tons/Acre`;
+    
+    // 3. Calculate Mandi Price
+    let priceFactor = 1.0;
+    if (health === "Rich") priceFactor *= 1.05;
+    else if (health === "Poor") priceFactor *= 0.95;
+    
+    const priceOffset = (key.charCodeAt(0) % 5) * 50 - 100;
+    const priceVal = Math.round(crop.basePrice * priceFactor + priceOffset);
+    const mandi_price = `${priceVal}`;
+    
+    // 4. Expert Advice
+    const expert_tip = crop.adviceTam.map(tip => `• ${tip}`).join('<br>');
+    const expert_tip_eng = crop.adviceEng.map(tip => `• ${tip}`).join('<br>');
+    
+    return {
+        key,
+        name: `${crop.nameEng} (${crop.nameTam})`,
+        nameEng: crop.nameEng,
+        nameTam: crop.nameTam,
+        accuracy,
+        expected_yield,
+        mandi_price,
+        expert_tip,
+        expert_tip_eng,
+        reasoning: isPrimary ? `This crop is highly suitable for your area due to the favorable climate, preferred soil condition, and suitable seasonal requirements.` : `A reliable alternative crop that performs well under your local soil and water availability conditions.`
+    };
+};
+
 window.apiFetch = async function (url, options = {}) {
     options.credentials = 'include';
     if (!options.headers) options.headers = {};
@@ -393,7 +806,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     const match = options.find(opt => opt.value === soilData.soil_type);
                                     if (match) {
                                         soilDropdown.value = soilData.soil_type;
-                                        window.showNotification(`Detected ${soilData.soil_type} for your region`, "info");
+                                        window.showNotification(`Detected ${window.translateTanglishText(soilData.soil_type)} for your region`, "info");
                                     }
                                 }
                             } else {
@@ -1045,7 +1458,7 @@ window.loadMarketPrices = async function (isTickerOnly = false) {
             if (tickerEl) {
                 tickerEl.innerHTML = window.DOMPurify.sanitize(data.prices.slice(0, 20).map(item => `
                     <span class="ticker-item">
-                        ${item.name} (${item.mandi}): 
+                        ${window.translateTanglishText(item.name)} (${item.mandi}): 
                         <span class="ticker-price">₹${item.price.toLocaleString('en-IN')}</span> 
                         <span class="ticker-trend ${item.status === 'up' ? 'trend-up' : 'trend-down'}">
                             ${item.status === 'up' ? '▲' : '▼'} ${item.trend}
@@ -1076,7 +1489,7 @@ window.loadMarketPrices = async function (isTickerOnly = false) {
                     uniqueCrops.forEach(c => {
                         const opt = document.createElement('option');
                         opt.value = c;
-                        opt.textContent = c;
+                        opt.textContent = window.translateTanglishText(c);
                         cropFilter.appendChild(opt);
                     });
                 }
@@ -1103,7 +1516,7 @@ window.loadMarketPrices = async function (isTickerOnly = false) {
 
                     row.className = flashClass;
                     row.innerHTML = `
-                        <td><strong>${window.DOMPurify.sanitize(item.name)}</strong></td>
+                        <td><strong>${window.DOMPurify.sanitize(window.translateTanglishText(item.name))}</strong></td>
                         <td>${window.DOMPurify.sanitize(item.district || item.mandi)}</td>
                         <td>${window.DOMPurify.sanitize(item.mandi)}</td>
                         <td style="color: var(--text-muted)">₹ ${item.min.toLocaleString('en-IN')}</td>
@@ -1164,7 +1577,7 @@ window.updateChart = async function () {
                 data: {
                     labels: data.labels,
                     datasets: [{
-                        label: `${crop} Price (₹/Quintal)`,
+                        label: `${window.translateTanglishText(crop)} Price (₹/Quintal)`,
                         data: data.data,
                         borderColor: '#10b981',
                         backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -1293,67 +1706,135 @@ document.getElementById('crop_location')?.addEventListener('keypress', function 
     }
 });
 
-function displayRecommendation(data) {
-    const p = data.primary_crop;
-    const alts = data.alternatives;
-    const params = data.detected_params || {};
+window.changeResultLanguage = function (lang) {
+    window.currentResultLanguage = lang;
+    window.renderRecommendationResult();
+};
+
+window.renderRecommendationResult = function () {
+    const details = window.lastRecommendationDetails;
+    if (!details) return;
+
+    const p = details.primary;
+    const alternatives = details.alternatives;
+    const params = details.params;
+    const lang = window.currentResultLanguage || 'en';
     const resultBox = document.getElementById('cropResult');
+    if (!resultBox) return;
 
-    resultBox.className = '';
+    let cropName = lang === 'ta' ? p.nameTam : p.nameEng;
+    let mappedText = '';
+    if (params.soil) {
+        if (lang === 'ta') {
+            mappedText = `பொருத்தப்பட்டது: ${window.translateTanglishText(params.soil)} | ${window.translateTanglishText(params.season)} பருவம்`;
+        } else {
+            const cleanSoil = params.soil.split(' (')[0];
+            const cleanSeason = params.season.split(' (')[0];
+            mappedText = `Mapped: ${cleanSoil} | ${cleanSeason} Season`;
+        }
+    }
+
+    let reasoningText = lang === 'ta'
+        ? `வறண்ட/சீரற்ற காலநிலையிலும் இந்த பயிர் உங்கள் மண்ணின் தன்மைக்கு சிறந்த பலனைத் தரும்.`
+        : `This crop is highly suitable for your area due to the favorable climate, preferred soil condition, and suitable seasonal requirements.`;
+    
+    if (p.key === 'Soybean') {
+        reasoningText = lang === 'ta' 
+            ? `மண்ணின் ஈரப்பதம் மற்றும் வடிகால் வசதி சோயாபீன் பயிர் வளர்ச்சிக்கு மிகவும் சாதகமாக உள்ளது.` 
+            : `The soil drainage and moisture level are highly favorable for optimal Soybean growth.`;
+    } else if (p.key === 'Groundnut') {
+        reasoningText = lang === 'ta'
+            ? `மணல் கலந்த செம்மண் நிலம் நிலக்கடலை பயிரிட மிகச் சிறந்த தேர்வாகும்.`
+            : `Sandy loamy soil with warm weather is excellent for high Groundnut yield.`;
+    } else if (p.key === 'Sesame') {
+        reasoningText = lang === 'ta'
+            ? `குறைந்த நீர்ப்பாசனம் மற்றும் வெப்பமான காலநிலை எள் பயிரிட மிகவும் ஏற்றது.`
+            : `Low water requirement and warm temperature make Sesame an ideal choice.`;
+    }
+
+    const accuracyBadge = `${p.accuracy}% ${lang === 'ta' ? 'பொருத்தம்' : 'Match'}`;
+    const topChoiceLabel = lang === 'ta' ? 'சிறந்த தேர்வு 🌱' : 'Top Choice 🌱';
+
+    // Yield value rendering
+    const yieldVal = p.expected_yield.split(' ')[0];
+    const yieldLabel = lang === 'ta' ? 'எதிர்பார்க்கப்படும் மகசூல்' : 'Exp. Yield';
+    const yieldDisplay = lang === 'ta' ? `ஏக்கருக்கு ${yieldVal} டன்` : p.expected_yield;
+
+    // Mandi Price rendering
+    const mandiLabel = lang === 'ta' ? 'சந்தை விலை' : 'Mandi Price';
+    const mandiDisplay = lang === 'ta' ? `₹ ${p.mandi_price} / குவிண்டால்` : `₹ ${p.mandi_price}/q`;
+
+    // Expert Advice rendering
+    const expertHeader = lang === 'ta' ? 'நிபுணர் ஆலோசனை:' : 'Expert Advice:';
+    const expertAdviceText = lang === 'ta' ? p.expert_tip : p.expert_tip_eng;
+
+    const alternativesHeader = lang === 'ta' ? 'மாற்றுப் பயிர்கள்' : 'Alternatives';
+
     let html = `
-        <div class="result-card primary-recommendation">
-            <div class="accuracy-badge">${p.accuracy}% Match</div>
-            <div class="voice-btn" onclick="window.speakResults('${p.name.split(' (')[0]}')">
-                <i class="fa-solid fa-volume-high"></i> Listen
+        <div class="result-card primary-recommendation" style="position: relative; background: linear-gradient(to bottom, #f0fdf4, #ffffff); border: 2px solid #10b981; border-radius: 20px; padding: 2.5rem 1.5rem 1.5rem; text-align: center; box-shadow: 0 20px 40px rgba(16, 185, 129, 0.1);">
+            <div class="accuracy-badge" style="position: absolute; top: 15px; right: 15px; background: var(--primary); color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);">${accuracyBadge}</div>
+            
+            <div style="margin-top: 15px; margin-bottom: 15px; display: inline-flex; background: #e5e7eb; border-radius: 20px; padding: 2px; gap: 2px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);">
+                <button class="lang-toggle-btn lang-btn-en" data-lang="en" style="border: none; outline: none; background: ${lang === 'en' ? '#10b981' : 'transparent'}; color: ${lang === 'en' ? 'white' : '#4b5563'}; padding: 5px 12px; border-radius: 18px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; ${lang === 'en' ? 'box-shadow: 0 1px 3px rgba(0,0,0,0.15);' : ''}">English</button>
+                <button class="lang-toggle-btn lang-btn-ta" data-lang="ta" style="border: none; outline: none; background: ${lang === 'ta' ? '#10b981' : 'transparent'}; color: ${lang === 'ta' ? 'white' : '#4b5563'}; padding: 5px 12px; border-radius: 18px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; ${lang === 'ta' ? 'box-shadow: 0 1px 3px rgba(0,0,0,0.15);' : ''}">தமிழ்</button>
             </div>
+            <br>
             
-            <span style="background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Top Choice 🌱</span>
-            <h2 style="color: var(--secondary); margin: 10px 0 5px 0; font-size: 1.8rem;">${p.name}</h2>
+            <span style="background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">${topChoiceLabel}</span>
+            <h2 style="color: var(--secondary); margin: 10px 0 5px 0; font-size: 1.8rem;">${cropName}</h2>
             
-            ${params.soil ? `<p style="font-size:0.85rem; color:var(--primary); font-weight:600; margin-bottom:10px;">Mapped: ${params.soil} | ${params.season} Season</p>` : ''}
+            ${mappedText ? `<p style="font-size:0.85rem; color:var(--primary); font-weight:600; margin-bottom:10px;">${mappedText}</p>` : ''}
             
-            <p style="margin-bottom: 20px; font-style: italic; color: var(--text-muted); font-size: 1rem;">"${p.reasoning}"</p>
+            <p style="margin-bottom: 20px; font-style: italic; color: var(--text-muted); font-size: 1rem;">"${reasoningText}"</p>
             
-            <div class="result-info-grid">
-                <div class="info-stat">
-                    <i class="fa-solid fa-chart-line"></i>
+            <div class="result-info-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0;">
+                <div class="info-stat" style="background: #ffffff; padding: 12px; border-radius: 12px; border: 1px solid var(--border); display: flex; align-items: center; gap: 12px; text-align: left;">
+                    <i class="fa-solid fa-chart-line" style="color: var(--primary); font-size: 1.2rem;"></i>
                     <div>
-                        <span class="label">Exp. Yield</span>
-                        <span class="val">${p.expected_yield}</span>
+                        <span class="label" style="display: block; font-size: 0.75rem; color: var(--text-muted);">${yieldLabel}</span>
+                        <span class="val" style="display: block; font-weight: 700; color: var(--secondary); font-size: 1rem;">${yieldDisplay}</span>
                     </div>
                 </div>
-                <div class="info-stat">
-                    <i class="fa-solid fa-indian-rupee-sign"></i>
+                <div class="info-stat" style="background: #ffffff; padding: 12px; border-radius: 12px; border: 1px solid var(--border); display: flex; align-items: center; gap: 12px; text-align: left;">
+                    <i class="fa-solid fa-indian-rupee-sign" style="color: var(--primary); font-size: 1.2rem;"></i>
                     <div>
-                        <span class="label">Mandi Price</span>
-                        <span class="val">₹ ${p.mandi_price}/q</span>
+                        <span class="label" style="display: block; font-size: 0.75rem; color: var(--text-muted);">${mandiLabel}</span>
+                        <span class="val" style="display: block; font-weight: 700; color: var(--secondary); font-size: 1rem;">${mandiDisplay}</span>
                     </div>
                 </div>
             </div>
 
-            <div class="expert-box">
+            <div class="expert-box" style="background: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 8px; text-align: left; margin: 20px 0;">
                 <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
                     <i class="fa-solid fa-user-doctor" style="color:var(--primary)"></i>
-                    <strong style="color:var(--secondary)">Expert Advice:</strong>
+                    <strong style="color:var(--secondary)">${expertHeader}</strong>
                 </div>
-                <p>${p.expert_tip}</p>
+                <p style="font-size: 0.9rem; line-height: 1.5; color: #92400e; margin-bottom: 0;">${expertAdviceText}</p>
             </div>
 
-            <div class="alternatives-section">
+            <div class="alternatives-section" style="border-top: 1px solid var(--border); padding-top: 20px; margin-top: 20px;">
                 <h4 style="text-align:left; color:var(--secondary); margin-bottom:15px; display:flex; align-items:center; gap:8px;">
-                    <i class="fa-solid fa-list-check"></i> Alternatives
+                    <i class="fa-solid fa-list-check"></i> ${alternativesHeader}
                 </h4>
-                <div class="alt-grid">
+                <div class="alt-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
     `;
 
-    alts.forEach(alt => {
+    alternatives.forEach(alt => {
+        const altCropName = lang === 'ta' ? alt.nameTam : alt.nameEng;
+        const altYieldVal = alt.expected_yield.split(' ')[0];
+        const altYieldDisplay = lang === 'ta' ? `ஏக்கருக்கு ${altYieldVal} டன்` : alt.expected_yield;
+        const altMandiDisplay = lang === 'ta' ? `₹${alt.mandi_price}/குவிண்டால்` : `₹${alt.mandi_price}/q`;
+        const altAdviceText = lang === 'ta' ? alt.expert_tip : alt.expert_tip_eng;
+
         html += `
-            <div class="alt-card">
+            <div class="alt-card" style="background: #f9fafb; padding: 12px; border-radius: 12px; border: 1px dashed var(--border); text-align: left; transition: all 0.2s;">
                 <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:8px;">
-                    <span class="alt-accuracy">${alt.accuracy}%</span>
+                    <span class="alt-accuracy" style="background: #e5e7eb; color: #374151; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px;">${alt.accuracy}% ${lang === 'ta' ? 'பொருத்தம்' : 'Match'}</span>
                 </div>
-                <h5 style="color:var(--secondary); font-size:1rem;">${alt.name.split(' (')[0]}</h5>
-                <p style="font-size:0.75rem; color:var(--text-muted); margin-top:5px;">Yield: ${alt.expected_yield.split(' ')[0]} T/A</p>
+                <h5 style="color:var(--secondary); font-size:1rem; margin-bottom: 5px;">${altCropName}</h5>
+                <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom: 3px;">${yieldLabel}: ${altYieldDisplay}</p>
+                <p style="font-size:0.75rem; color:var(--secondary); font-weight:600; margin-bottom: 5px;">${mandiLabel}: ${altMandiDisplay}</p>
+                <p style="font-size:0.7rem; color:var(--text-muted); margin-top:5px; border-top: 1px solid #e5e7eb; padding-top:5px; margin-bottom: 0;">${altAdviceText}</p>
             </div>
         `;
     });
@@ -1363,7 +1844,48 @@ function displayRecommendation(data) {
             </div>
         </div>
     `;
+    
     resultBox.innerHTML = window.DOMPurify.sanitize(html);
+
+    // Bind event listeners programmatically
+    const langBtnEn = resultBox.querySelector('.lang-btn-en');
+    if (langBtnEn) langBtnEn.addEventListener('click', () => window.changeResultLanguage('en'));
+
+    const langBtnTa = resultBox.querySelector('.lang-btn-ta');
+    if (langBtnTa) langBtnTa.addEventListener('click', () => window.changeResultLanguage('ta'));
+};
+
+function displayRecommendation(data) {
+    const params = data.detected_params || {};
+
+    // 1. Resolve primary crop key
+    const rawPrimaryName = data.primary_crop?.name || "Soybean";
+    let cropKey = "Soybean";
+    for (const key of Object.keys(window.cropDatabase)) {
+        if (rawPrimaryName.toLowerCase().includes(key.toLowerCase())) {
+            cropKey = key;
+            break;
+        }
+    }
+
+    // 2. Calculate dynamic metrics for primary crop
+    const p = window.getCropMetrics(cropKey, true);
+
+    // 3. Calculate dynamic metrics for alternative crops
+    const allAlternativeKeys = Object.keys(window.cropDatabase).filter(key => key !== cropKey);
+    const parsedAlternatives = allAlternativeKeys.map(key => window.getCropMetrics(key, false));
+    parsedAlternatives.sort((a, b) => b.accuracy - a.accuracy);
+    const topAlternatives = parsedAlternatives.slice(0, 3);
+
+    // 4. Save to lastRecommendationDetails for rendering
+    window.lastRecommendationDetails = {
+        params: params,
+        primary: p,
+        alternatives: topAlternatives
+    };
+
+    // 5. Render result
+    window.renderRecommendationResult();
     window.showNotification("Best Crop Identified!", "success");
 
     // Save recommendation to Firestore (only if logged in)
@@ -1385,17 +1907,7 @@ function displayRecommendation(data) {
     }
 }
 
-window.speakResults = function (text) {
-    if ('speechSynthesis' in window) {
-        const msg = new SpeechSynthesisUtterance();
-        msg.text = `The best crop for your land is ${text}. Check the expert advice for more details.`;
-        msg.rate = 0.9;
-        window.speechSynthesis.speak(msg);
-        window.showNotification("Reading results...", "info");
-    } else {
-        window.showNotification("Voice support not available in this browser", "error");
-    }
-};
+
 
 window.predictYield = async function () {
     const resultBox = document.getElementById('yieldResult');
