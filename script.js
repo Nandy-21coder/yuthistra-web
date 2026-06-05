@@ -1373,107 +1373,126 @@ window.smartAnalyze = async function () {
         return;
     }
 
-    loading.style.display = 'block';
-    loadText.innerText = "Querying regional databases...";
-    resultBox.innerHTML = window.DOMPurify.sanitize(`<div class="empty-state"><i class="fa-solid fa-satellite fa-spin"></i><p>Synchronizing with regional databases...</p></div>`);
+    // Show loading
+    if (loading) loading.style.display = 'block';
+    if (loadText) loadText.innerText = "Analyzing soil, climate and crop suitability...";
+    if (resultBox) resultBox.innerHTML = window.DOMPurify.sanitize(`<div class="empty-state"><i class="fa-solid fa-satellite fa-spin"></i><p>Analyzing soil, climate and crop suitability...</p></div>`);
 
-    // Simulate database lookup delay for premium user experience
-    await new Promise(resolve => setTimeout(resolve, 800));
+    try {
+        // Simulate database lookup delay for premium user experience
+        await new Promise(resolve => setTimeout(resolve, 800));
 
-    // Parse district from location input
-    const districtObj = window.parseDistrictFromLocation(loc);
-    if (!districtObj) {
-        window.showNotification("Location not recognized in Tamil Nadu. Using manual or default parameters.", "warning");
-        loading.style.display = 'none';
-        window.analyzeCrop();
-        return;
-    }
+        // Parse district from location input
+        const districtObj = window.parseDistrictFromLocation(loc);
+        if (!districtObj) {
+            window.showNotification("Location not recognized in Tamil Nadu. Using manual or default parameters.", "warning");
+            if (loading) loading.style.display = 'none';
+            window.analyzeCrop();
+            return;
+        }
 
-    // Auto-detect parameters based on District and Current Month
-    const currentMonth = new Date().getMonth();
-    let detectedSeason = "Rainy"; // Default Kharif (Rainy)
-    if (currentMonth >= 9 && currentMonth <= 0) { // Oct - Jan
-        detectedSeason = "Winter"; // Rabi (Winter)
-    } else if (currentMonth >= 1 && currentMonth <= 4) { // Feb - May
-        detectedSeason = "Summer"; // Zaid (Summer)
-    }
-    
-    // Predominant soil for district (first in list)
-    const detectedSoil = districtObj.preferredSoils[0];
-    
-    // Default water for district
-    const detectedWater = districtObj.waterAvailability;
-    
-    // Weather based on month/season
-    const detectedWeather = districtObj.typicalWeather[detectedSeason] || "Pleasant";
+        // Auto-detect parameters based on District and Current Month
+        const currentMonth = new Date().getMonth(); // 0=Jan ... 11=Dec
+        let detectedSeason = "Rainy"; // Default Kharif (Rainy) Jun-Sep
+        if (currentMonth >= 9 || currentMonth <= 0) { // Oct - Jan
+            detectedSeason = "Winter"; // Rabi (Winter)
+        } else if (currentMonth >= 1 && currentMonth <= 4) { // Feb - May
+            detectedSeason = "Summer"; // Zaid (Summer)
+        }
 
-    // Auto-update form elements in UI
-    const soilDropdown = document.getElementById('crop_soil_type');
-    const seasonDropdown = document.getElementById('crop_season');
-    const waterDropdown = document.getElementById('crop_water');
-    const weatherDropdown = document.getElementById('crop_weather');
+        // Predominant soil for district (first in list)
+        const detectedSoil = districtObj.preferredSoils[0];
 
-    if (soilDropdown) soilDropdown.value = detectedSoil;
-    if (seasonDropdown) seasonDropdown.value = detectedSeason;
-    if (waterDropdown) waterDropdown.value = detectedWater;
-    if (weatherDropdown) weatherDropdown.value = detectedWeather;
+        // Default water for district
+        const detectedWater = districtObj.waterAvailability;
 
-    // Run recommendation logic
-    const inputs = {
-        soil_type: detectedSoil,
-        season: detectedSeason,
-        water: detectedWater,
-        health: document.getElementById('crop_health')?.value || "Average",
-        weather: detectedWeather,
-        districtName: districtObj.name
-    };
+        // Weather based on month/season
+        const detectedWeather = districtObj.typicalWeather[detectedSeason] || "Pleasant";
 
-    // Calculate suitability scores for all crops
-    const results = Object.keys(window.cropSuitabilityDatabase).map(key => {
-        return window.evaluateCropSuitability(key, inputs);
-    });
+        // Auto-update form elements in UI
+        const soilDropdown = document.getElementById('crop_soil_type');
+        const seasonDropdown = document.getElementById('crop_season');
+        const waterDropdown = document.getElementById('crop_water');
+        const weatherDropdown = document.getElementById('crop_weather');
 
-    // Sort by suitability score descending
-    results.sort((a, b) => b.accuracy - a.accuracy);
+        if (soilDropdown) soilDropdown.value = detectedSoil;
+        if (seasonDropdown) seasonDropdown.value = detectedSeason;
+        if (waterDropdown) waterDropdown.value = detectedWater;
+        if (weatherDropdown) weatherDropdown.value = detectedWeather;
 
-    const primaryCrop = results[0];
-    const alternatives = results.slice(1, 4);
-
-    // Save to lastRecommendationDetails
-    window.lastRecommendationDetails = {
-        params: {
-            soil: detectedSoil,
+        // Run recommendation logic
+        const inputs = {
+            soil_type: detectedSoil,
             season: detectedSeason,
             water: detectedWater,
-            health: inputs.health,
+            health: document.getElementById('crop_health')?.value || "Average",
             weather: detectedWeather,
-            location: loc
-        },
-        primary: primaryCrop,
-        alternatives: alternatives
-    };
+            districtName: districtObj.name
+        };
 
-    // Render result
-    window.renderRecommendationResult();
-    window.showNotification(`Data-driven analysis complete for ${districtObj.name} district`, "success");
-    loading.style.display = 'none';
-
-    // Save recommendation to Firestore (only if logged in)
-    try {
-        if (typeof firebase !== 'undefined') {
-            const currentUser = firebase.auth().currentUser;
-            if (currentUser) {
-                firebase.firestore().collection('crop_recommendations').add({
-                    userEmail: currentUser.email,
-                    location: loc,
-                    soilType: detectedSoil,
-                    recommendedCrop: primaryCrop.name,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                }).catch(err => console.error("Firestore error saving recommendation:", err));
-            }
+        // Validate the database is available
+        if (!window.cropSuitabilityDatabase || Object.keys(window.cropSuitabilityDatabase).length === 0) {
+            throw new Error("Crop database not loaded. Please refresh the page.");
         }
-    } catch (fbErr) {
-        console.error("Failed to save crop recommendation to Firestore:", fbErr);
+
+        // Calculate suitability scores for all crops
+        const results = Object.keys(window.cropSuitabilityDatabase).map(key => {
+            return window.evaluateCropSuitability(key, inputs);
+        }).filter(Boolean);
+
+        if (results.length === 0) {
+            throw new Error("No crop data available for analysis.");
+        }
+
+        // Sort by suitability score descending
+        results.sort((a, b) => b.accuracy - a.accuracy);
+
+        const primaryCrop = results[0];
+        const alternatives = results.slice(1, 4);
+
+        // Save to lastRecommendationDetails
+        window.lastRecommendationDetails = {
+            params: {
+                soil: detectedSoil,
+                season: detectedSeason,
+                water: detectedWater,
+                health: inputs.health,
+                weather: detectedWeather,
+                location: loc
+            },
+            primary: primaryCrop,
+            alternatives: alternatives
+        };
+
+        // Render result
+        window.renderRecommendationResult();
+        window.showNotification(`Data-driven analysis complete for ${districtObj.name} district`, "success");
+
+        // Save recommendation to Firestore (only if logged in)
+        try {
+            if (typeof firebase !== 'undefined') {
+                const currentUser = firebase.auth().currentUser;
+                if (currentUser) {
+                    firebase.firestore().collection('crop_recommendations').add({
+                        userEmail: currentUser.email,
+                        location: loc,
+                        soilType: detectedSoil,
+                        recommendedCrop: primaryCrop.name,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    }).catch(err => console.error("Firestore error saving recommendation:", err));
+                }
+            }
+        } catch (fbErr) {
+            console.error("Failed to save crop recommendation to Firestore:", fbErr);
+        }
+
+    } catch (err) {
+        console.error("Smart Detect error:", err);
+        window.showNotification("Unable to process recommendations. Please try again.", "error");
+        if (resultBox) resultBox.innerHTML = window.DOMPurify.sanitize(`<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Unable to process recommendations. Please try again.</p></div>`);
+    } finally {
+        // Always hide the loader
+        if (loading) loading.style.display = 'none';
     }
 };
 
@@ -1484,71 +1503,90 @@ window.analyzeCrop = async function () {
     const loadText = document.getElementById('loadingText');
     const resultBox = document.getElementById('cropResult');
 
-    loading.style.display = 'block';
-    loadText.innerText = "Analyzing manual parameters...";
-    resultBox.innerHTML = window.DOMPurify.sanitize(`<div class="empty-state"><i class="fa-solid fa-microchip fa-spin"></i><p>Processing farm conditions...</p></div>`);
+    // Show loading
+    if (loading) loading.style.display = 'block';
+    if (loadText) loadText.innerText = "Analyzing soil, climate and crop suitability...";
+    if (resultBox) resultBox.innerHTML = window.DOMPurify.sanitize(`<div class="empty-state"><i class="fa-solid fa-microchip fa-spin"></i><p>Analyzing soil, climate and crop suitability...</p></div>`);
 
-    await new Promise(resolve => setTimeout(resolve, 600));
-
-    const loc = locInput?.value || "";
-    const districtObj = window.parseDistrictFromLocation(loc);
-    const districtName = districtObj ? districtObj.name : "Tiruvannamalai";
-
-    const inputs = {
-        soil_type: soilDropdown?.value || "Black Soil",
-        season: document.getElementById('crop_season')?.value || "Rainy",
-        water: document.getElementById('crop_water')?.value || "Medium",
-        health: document.getElementById('crop_health')?.value || "Average",
-        weather: document.getElementById('crop_weather')?.value || "Pleasant",
-        districtName: districtName
-    };
-
-    // Calculate suitability scores for all crops
-    const results = Object.keys(window.cropSuitabilityDatabase).map(key => {
-        return window.evaluateCropSuitability(key, inputs);
-    });
-
-    // Sort by suitability score descending
-    results.sort((a, b) => b.accuracy - a.accuracy);
-
-    const primaryCrop = results[0];
-    const alternatives = results.slice(1, 4);
-
-    // Save to lastRecommendationDetails
-    window.lastRecommendationDetails = {
-        params: {
-            soil: inputs.soil_type,
-            season: inputs.season,
-            water: inputs.water,
-            health: inputs.health,
-            weather: inputs.weather,
-            location: loc
-        },
-        primary: primaryCrop,
-        alternatives: alternatives
-    };
-
-    // Render result
-    window.renderRecommendationResult();
-    window.showNotification("Analysis Complete", "success");
-    loading.style.display = 'none';
-
-    // Save recommendation to Firestore (only if logged in)
     try {
-        if (typeof firebase !== 'undefined') {
-            const currentUser = firebase.auth().currentUser;
-            if (currentUser) {
-                firebase.firestore().collection('crop_recommendations').add({
-                    userEmail: currentUser.email,
-                    location: loc,
-                    soilType: inputs.soil_type,
-                    recommendedCrop: primaryCrop.name,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                }).catch(err => console.error("Firestore error saving recommendation:", err));
-            }
+        await new Promise(resolve => setTimeout(resolve, 600));
+
+        const loc = locInput?.value || "";
+        const districtObj = window.parseDistrictFromLocation(loc);
+        const districtName = districtObj ? districtObj.name : "Tiruvannamalai";
+
+        const inputs = {
+            soil_type: soilDropdown?.value || "Black Soil",
+            season: document.getElementById('crop_season')?.value || "Rainy",
+            water: document.getElementById('crop_water')?.value || "Medium",
+            health: document.getElementById('crop_health')?.value || "Average",
+            weather: document.getElementById('crop_weather')?.value || "Pleasant",
+            districtName: districtName
+        };
+
+        // Validate the database is available
+        if (!window.cropSuitabilityDatabase || Object.keys(window.cropSuitabilityDatabase).length === 0) {
+            throw new Error("Crop database not loaded. Please refresh the page.");
         }
-    } catch (fbErr) {
-        console.error("Failed to save crop recommendation to Firestore:", fbErr);
+
+        // Calculate suitability scores for all crops
+        const results = Object.keys(window.cropSuitabilityDatabase).map(key => {
+            return window.evaluateCropSuitability(key, inputs);
+        }).filter(Boolean);
+
+        if (results.length === 0) {
+            throw new Error("No crop data available for analysis.");
+        }
+
+        // Sort by suitability score descending
+        results.sort((a, b) => b.accuracy - a.accuracy);
+
+        const primaryCrop = results[0];
+        const alternatives = results.slice(1, 4);
+
+        // Save to lastRecommendationDetails
+        window.lastRecommendationDetails = {
+            params: {
+                soil: inputs.soil_type,
+                season: inputs.season,
+                water: inputs.water,
+                health: inputs.health,
+                weather: inputs.weather,
+                location: loc
+            },
+            primary: primaryCrop,
+            alternatives: alternatives
+        };
+
+        // Render result
+        window.renderRecommendationResult();
+        window.showNotification("Analysis Complete", "success");
+
+        // Save recommendation to Firestore (only if logged in)
+        try {
+            if (typeof firebase !== 'undefined') {
+                const currentUser = firebase.auth().currentUser;
+                if (currentUser) {
+                    firebase.firestore().collection('crop_recommendations').add({
+                        userEmail: currentUser.email,
+                        location: loc,
+                        soilType: inputs.soil_type,
+                        recommendedCrop: primaryCrop.name,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    }).catch(err => console.error("Firestore error saving recommendation:", err));
+                }
+            }
+        } catch (fbErr) {
+            console.error("Failed to save crop recommendation to Firestore:", fbErr);
+        }
+
+    } catch (err) {
+        console.error("Analyze Crop error:", err);
+        window.showNotification("Unable to process recommendations. Please try again.", "error");
+        if (resultBox) resultBox.innerHTML = window.DOMPurify.sanitize(`<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Unable to process recommendations. Please try again.</p></div>`);
+    } finally {
+        // Always hide the loader regardless of success or failure
+        if (loading) loading.style.display = 'none';
     }
 };
 
