@@ -201,19 +201,19 @@
                                     <div class="input-group">
                                         <label>Soil Type</label>
                                         <select id="crop_soil_type" name="soil_type">
-                                            <option value="Black Soil">Black Soil (கரிசல் மண்)</option>
-                                            <option value="Alluvial Soil">Alluvial Soil (வண்டல் மண்)</option>
-                                            <option value="Red Soil">Red Soil (செம்மண்)</option>
-                                            <option value="Sandy Soil">Sandy Soil (மணல் மண்)</option>
-                                            <option value="Loamy Soil">Loamy Soil (இருவாட்டி மண்)</option>
+                                            <option value="Black Soil">Black Soil (Karichal)</option>
+                                            <option value="Alluvial Soil">Alluvial Soil (Vandhal)</option>
+                                            <option value="Red Soil">Red Soil (Semman)</option>
+                                            <option value="Sandy Soil">Sandy Soil (Manal)</option>
+                                            <option value="Loamy Soil">Loamy Soil (Loamy)</option>
                                         </select>
                                     </div>
                                     <div class="input-group">
                                         <label>Current Season</label>
                                         <select id="crop_season" name="season">
-                                            <option value="Rainy">Kharif (மழைக்காலம்)</option>
-                                            <option value="Winter">Rabi (குளிர்காலம்)</option>
-                                            <option value="Summer">Zaid (கோடைகாலம்)</option>
+                                            <option value="Rainy">Kharif (Rainy / ஆடிப் பட்டம்)</option>
+                                            <option value="Winter">Rabi (Winter / புரட்டாசிப் பட்டம்)</option>
+                                            <option value="Summer">Zaid (Summer / சித்திரைப் பட்டம்)</option>
                                         </select>
                                     </div>
                                 </div>
@@ -221,17 +221,17 @@
                                     <div class="input-group">
                                         <label>Water Availability</label>
                                         <select id="crop_water" name="water">
-                                            <option value="Low">Low (Rain-fed / Dry) (மானாவாரி)</option>
-                                            <option value="Medium" selected>Medium (Partial Irrigation) (பகுதி நீர்ப்பாசனம்)</option>
-                                            <option value="High">High (Well Irrigated) (நன்கு நீர்ப்பாசனம்)</option>
+                                            <option value="Low">Low (Rain-fed / Dry)</option>
+                                            <option value="Medium" selected>Medium (Partial Irrigation)</option>
+                                            <option value="High">High (Well Irrigated)</option>
                                         </select>
                                     </div>
                                     <div class="input-group">
                                         <label>Soil Health (Fertility)</label>
                                         <select id="crop_health" name="health">
-                                            <option value="Poor">Poor (Needs Manure) (நலிந்த மண் / உரம் தேவை)</option>
-                                            <option value="Average" selected>Average (Regular) (சராசரி மண் வளம்)</option>
-                                            <option value="Rich">Rich (Highly Fertile) (செழிப்பான மண் வளம்)</option>
+                                            <option value="Poor">Poor (Needs Manure)</option>
+                                            <option value="Average" selected>Average (Regular)</option>
+                                            <option value="Rich">Rich (Highly Fertile)</option>
                                         </select>
                                     </div>
                                 </div>
@@ -239,9 +239,9 @@
                                     <div class="input-group">
                                         <label>Weather Feeling</label>
                                         <select id="crop_weather" name="weather">
-                                            <option value="Cool">Cool / Cold (குளிர்ச்சியான)</option>
-                                            <option value="Pleasant" selected>Pleasant / Normal (இதமான / சாதாரண)</option>
-                                            <option value="Hot">Hot / Very Warm (வெப்பமான)</option>
+                                            <option value="Cool">Cool / Cold</option>
+                                            <option value="Pleasant" selected>Pleasant / Normal</option>
+                                            <option value="Hot">Hot / Very Warm</option>
                                         </select>
                                     </div>
                                     <div class="input-group">
@@ -289,15 +289,15 @@
                                     <div class="input-group">
                                         <label>Selected Crop</label>
                                         <select id="yield_crop" name="crop">
-                                            <option value="Groundnut (Nilakkadalai)">Groundnut (நிலக்கடலை)</option>
-                                            <option value="Mustard (Kadugu)">Mustard (கடுகு)</option>
-                                            <option value="Soybean">Soybean (சோயாபீன்ஸ்)</option>
-                                            <option value="Sunflower (Suryagandhi)">Sunflower (சூரியகாந்தி)</option>
-                                            <option value="Sesame (Ellu)">Sesame (எள்)</option>
-                                            <option value="Safflower (Kusuma)">Safflower (குசும்பா)</option>
-                                            <option value="Niger seed (Uchellu)">Niger seed (உச்செள்)</option>
-                                            <option value="Castor seed (Amanakku)">Castor seed (ஆமணக்கு)</option>
-                                            <option value="Linseed (Alivithai)">Linseed (ஆளிவிதை)</option>
+                                            <option value="Groundnut (Nilakkadalai)">Groundnut</option>
+                                            <option value="Mustard (Kadugu)">Mustard</option>
+                                            <option value="Soybean">Soybean</option>
+                                            <option value="Sunflower (Suryagandhi)">Sunflower</option>
+                                            <option value="Sesame (Ellu)">Sesame</option>
+                                            <option value="Safflower (Kusuma)">Safflower</option>
+                                            <option value="Niger seed (Uchellu)">Niger seed</option>
+                                            <option value="Castor seed (Amanakku)">Castor seed</option>
+                                            <option value="Linseed (Alivithai)">Linseed</option>
                                         </select>
                                     </div>
                                 </div>
@@ -383,15 +383,15 @@
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                                 <h4 style="color:var(--secondary); font-size:1.1rem;"><i class="fa-solid fa-chart-area"></i> Seasonal Price Trend</h4>
                                 <select id="chartCropSelector" onchange="window.updateChart()" style="padding: 5px 10px; border-radius: 6px; border: 1px solid #ddd; font-size: 0.85rem;">
-                                    <option value="Mustard">Mustard (கடுகு)</option>
-                                    <option value="Soybean">Soybean (சோயாபீன்ஸ்)</option>
-                                    <option value="Groundnut">Groundnut (நிலக்கடலை)</option>
-                                    <option value="Sunflower">Sunflower (சூரியகாந்தி)</option>
-                                    <option value="Sesame">Sesame (எள்)</option>
-                                    <option value="Safflower">Safflower (குசும்பா)</option>
-                                    <option value="Niger">Niger seed (உச்செள்)</option>
-                                    <option value="Castor">Castor seed (ஆமணக்கு)</option>
-                                    <option value="Linseed">Linseed (ஆளிவிதை)</option>
+                                    <option value="Mustard">Mustard</option>
+                                    <option value="Soybean">Soybean</option>
+                                    <option value="Groundnut">Groundnut</option>
+                                    <option value="Sunflower">Sunflower</option>
+                                    <option value="Sesame">Sesame</option>
+                                    <option value="Safflower">Safflower</option>
+                                    <option value="Niger">Niger seed</option>
+                                    <option value="Castor">Castor seed</option>
+                                    <option value="Linseed">Linseed</option>
                                 </select>
                             </div>
                             <div style="height: 250px;">
@@ -567,8 +567,7 @@
     <script src="firebase.js"></script>
 
     <!-- Main Script -->
-    <script src="agri_database.js"></script>
-    <script src="script.js?v=3.0"></script>
+    <script src="script.js?v=3.1"></script>
 </body>
 
 </html>

@@ -1,167 +1,6 @@
 console.log(firebase);
 const API_BASE_URL = 'https://nandha-backend-6azag5bue-raghavan-18s-projects.vercel.app';
 
-window.currentResultLanguage = 'en';
-
-window.translateTanglishText = function (text) {
-    if (!text || typeof text !== 'string') return text;
-    
-    let result = text;
-    
-    // 1. Direct Tanglish Word Replacements
-    const wordMap = {
-        'Karichal': 'கரிசல் மண்',
-        'Vandhal': 'வண்டல் மண்',
-        'Semman': 'செம்மண்',
-        'Manal': 'மணல் மண்',
-        'Loamy': 'இருவாட்டி மண்',
-        'Mazhai Kaalam': 'மழைக்காலம்',
-        'MazhaiKaalam': 'மழைக்காலம்',
-        'Pani Kaalam': 'குளிர்காலம்',
-        'PaniKaalam': 'குளிர்காலம்',
-        'Veiyil Kaalam': 'கோடைகாலம்',
-        'VeiyilKaalam': 'கோடைகாலம்',
-        'Nilakkadalai': 'நிலக்கடலை',
-        'Kadugu': 'கடுகு',
-        'Suryagandhi': 'சூரியகாந்தி',
-        'Ellu': 'எள்',
-        'Kusuma': 'குசும்பா',
-        'Uchellu': 'உச்செள்',
-        'Amanakku': 'ஆமணக்கு',
-        'Alivithai': 'ஆளிவிதை'
-    };
-    
-    for (const [tanglish, tamil] of Object.entries(wordMap)) {
-        const regex = new RegExp(tanglish, 'gi');
-        result = result.replace(regex, tamil);
-    }
-    
-    // 2. Format English options (if they don't already have Tamil in brackets)
-    // Crop translations
-    const cropTranslations = {
-        'Groundnut': 'நிலக்கடலை',
-        'Mustard': 'கடுகு',
-        'Soybean': 'சோயாபீன்ஸ்',
-        'Sunflower': 'சூரியகாந்தி',
-        'Sesame': 'எள்',
-        'Safflower': 'குசும்பா',
-        'Niger seed': 'உச்செள்',
-        'Castor seed': 'ஆமணக்கு',
-        'Linseed': 'ஆளிவிதை'
-    };
-    
-    // Soil translations
-    const soilTranslations = {
-        'Black Soil': 'கரிசல் மண்',
-        'Alluvial Soil': 'வண்டல் மண்',
-        'Red Soil': 'செம்மண்',
-        'Sandy Soil': 'மணல் மண்',
-        'Loamy Soil': 'இருவாட்டி மண்'
-    };
-    
-    // Season translations
-    const seasonTranslations = {
-        'Kharif': 'மழைக்காலம்',
-        'Rabi': 'குளிர்காலம்',
-        'Zaid': 'கோடைகாலம்',
-        'Rainy': 'மழைக்காலம்',
-        'Winter': 'குளிர்காலம்',
-        'Summer': 'கோடைகாலம்'
-    };
-
-    // Weather translations
-    const weatherTranslations = {
-        'Cool': 'குளிர்ச்சியான',
-        'Cold': 'குளிர்ச்சியான',
-        'Pleasant': 'இதமான / சாதாரண',
-        'Normal': 'இதமான / சாதாரண',
-        'Hot': 'வெப்பமான',
-        'Very Warm': 'வெப்பமான'
-    };
-
-    // Water translations
-    const waterTranslations = {
-        'Low': 'குறைந்த நீர்ப்பாசனம் / மானாவாரி',
-        'Medium': 'பகுதி நீர்ப்பாசனம்',
-        'High': 'நன்கு நீர்ப்பாசனம்'
-    };
-
-    // Soil fertility translations
-    const fertilityTranslations = {
-        'Poor': 'நலிந்த மண் / உரம் தேவை',
-        'Average': 'சராசரி மண் வளம்',
-        'Rich': 'செழிப்பான மண் வளம்'
-    };
-
-    // Apply fallback translation if only English name is present without Tamil script
-    const hasTamil = /[\u0b80-\u0bff]/.test(result);
-    if (!hasTamil) {
-        // Check crops
-        for (const [eng, tamil] of Object.entries(cropTranslations)) {
-            if (result.toLowerCase() === eng.toLowerCase()) {
-                return `${eng} (${tamil})`;
-            }
-        }
-        // Check soils
-        for (const [eng, tamil] of Object.entries(soilTranslations)) {
-            if (result.toLowerCase() === eng.toLowerCase()) {
-                return `${eng} (${tamil})`;
-            }
-        }
-        // Check seasons
-        for (const [eng, tamil] of Object.entries(seasonTranslations)) {
-            if (result.toLowerCase() === eng.toLowerCase()) {
-                return `${eng} (${tamil})`;
-            }
-        }
-        // Check weather
-        for (const [eng, tamil] of Object.entries(weatherTranslations)) {
-            if (result.toLowerCase() === eng.toLowerCase()) {
-                return `${eng} (${tamil})`;
-            }
-        }
-        // Check water
-        for (const [eng, tamil] of Object.entries(waterTranslations)) {
-            if (result.toLowerCase() === eng.toLowerCase()) {
-                return `${eng} (${tamil})`;
-            }
-        }
-        // Check fertility
-        for (const [eng, tamil] of Object.entries(fertilityTranslations)) {
-            if (result.toLowerCase() === eng.toLowerCase()) {
-                return `${eng} (${tamil})`;
-            }
-        }
-    }
-    
-    return result;
-};
-
-window.cropDatabase = window.cropSuitabilityDatabase;
-
-window.getCropMetrics = function (key, isPrimary = false) {
-    const soil_type = document.getElementById('crop_soil_type')?.value || "Black Soil";
-    const season = document.getElementById('crop_season')?.value || "Rainy";
-    const water = document.getElementById('crop_water')?.value || "Medium";
-    const health = document.getElementById('crop_health')?.value || "Average";
-    const weather = document.getElementById('crop_weather')?.value || "Pleasant";
-    const locationInput = document.getElementById('crop_location')?.value || "";
-
-    const districtObj = window.parseDistrictFromLocation(locationInput);
-    const districtName = districtObj ? districtObj.name : "Tiruvannamalai";
-
-    const inputs = {
-        soil_type,
-        season,
-        water,
-        health,
-        weather,
-        districtName
-    };
-
-    return window.evaluateCropSuitability(key, inputs);
-};;
-
 window.apiFetch = async function (url, options = {}) {
     options.credentials = 'include';
     if (!options.headers) options.headers = {};
@@ -554,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     const match = options.find(opt => opt.value === soilData.soil_type);
                                     if (match) {
                                         soilDropdown.value = soilData.soil_type;
-                                        window.showNotification(`Detected ${window.translateTanglishText(soilData.soil_type)} for your region`, "info");
+                                        window.showNotification(`Detected ${soilData.soil_type} for your region`, "info");
                                     }
                                 }
                             } else {
@@ -1199,7 +1038,6 @@ window.loadMarketPrices = async function (isTickerOnly = false) {
         const data = await response.json();
 
         if (data.status === 'success') {
-            window.rawMarketPrices = data.prices;
             // Reset warning flag on success
             hasShown429Warning = false;
 
@@ -1207,7 +1045,7 @@ window.loadMarketPrices = async function (isTickerOnly = false) {
             if (tickerEl) {
                 tickerEl.innerHTML = window.DOMPurify.sanitize(data.prices.slice(0, 20).map(item => `
                     <span class="ticker-item">
-                        ${window.translateTanglishText(item.name)} (${item.mandi}): 
+                        ${item.name} (${item.mandi}): 
                         <span class="ticker-price">₹${item.price.toLocaleString('en-IN')}</span> 
                         <span class="ticker-trend ${item.status === 'up' ? 'trend-up' : 'trend-down'}">
                             ${item.status === 'up' ? '▲' : '▼'} ${item.trend}
@@ -1238,7 +1076,7 @@ window.loadMarketPrices = async function (isTickerOnly = false) {
                     uniqueCrops.forEach(c => {
                         const opt = document.createElement('option');
                         opt.value = c;
-                        opt.textContent = window.translateTanglishText(c);
+                        opt.textContent = c;
                         cropFilter.appendChild(opt);
                     });
                 }
@@ -1265,7 +1103,7 @@ window.loadMarketPrices = async function (isTickerOnly = false) {
 
                     row.className = flashClass;
                     row.innerHTML = `
-                        <td><strong>${window.DOMPurify.sanitize(window.translateTanglishText(item.name))}</strong></td>
+                        <td><strong>${window.DOMPurify.sanitize(item.name)}</strong></td>
                         <td>${window.DOMPurify.sanitize(item.district || item.mandi)}</td>
                         <td>${window.DOMPurify.sanitize(item.mandi)}</td>
                         <td style="color: var(--text-muted)">₹ ${item.min.toLocaleString('en-IN')}</td>
@@ -1326,7 +1164,7 @@ window.updateChart = async function () {
                 data: {
                     labels: data.labels,
                     datasets: [{
-                        label: `${window.translateTanglishText(crop)} Price (₹/Quintal)`,
+                        label: `${crop} Price (₹/Quintal)`,
                         data: data.data,
                         borderColor: '#10b981',
                         backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -1373,126 +1211,44 @@ window.smartAnalyze = async function () {
         return;
     }
 
-    // Show loading
-    if (loading) loading.style.display = 'block';
-    if (loadText) loadText.innerText = "Analyzing soil, climate and crop suitability...";
-    if (resultBox) resultBox.innerHTML = window.DOMPurify.sanitize(`<div class="empty-state"><i class="fa-solid fa-satellite fa-spin"></i><p>Analyzing soil, climate and crop suitability...</p></div>`);
+    loading.style.display = 'block';
+    loadText.innerText = "Fetching data for your location...";
+    resultBox.innerHTML = window.DOMPurify.sanitize(`<div class="empty-state"><i class="fa-solid fa-satellite fa-spin"></i><p>Synchronizing with regional databases...</p></div>`);
 
     try {
-        // Simulate database lookup delay for premium user experience
-        await new Promise(resolve => setTimeout(resolve, 800));
+        const response = await apiFetch(`${API_BASE_URL}/api/smart-recommend`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ location: loc })
+        });
+        const data = await response.json();
 
-        // Parse district from location input
-        const districtObj = window.parseDistrictFromLocation(loc);
-        if (!districtObj) {
-            window.showNotification("Location not recognized in Tamil Nadu. Using manual or default parameters.", "warning");
-            if (loading) loading.style.display = 'none';
-            window.analyzeCrop();
-            return;
-        }
-
-        // Auto-detect parameters based on District and Current Month
-        const currentMonth = new Date().getMonth(); // 0=Jan ... 11=Dec
-        let detectedSeason = "Rainy"; // Default Kharif (Rainy) Jun-Sep
-        if (currentMonth >= 9 || currentMonth <= 0) { // Oct - Jan
-            detectedSeason = "Winter"; // Rabi (Winter)
-        } else if (currentMonth >= 1 && currentMonth <= 4) { // Feb - May
-            detectedSeason = "Summer"; // Zaid (Summer)
-        }
-
-        // Predominant soil for district (first in list)
-        const detectedSoil = districtObj.preferredSoils[0];
-
-        // Default water for district
-        const detectedWater = districtObj.waterAvailability;
-
-        // Weather based on month/season
-        const detectedWeather = districtObj.typicalWeather[detectedSeason] || "Pleasant";
-
-        // Auto-update form elements in UI
-        const soilDropdown = document.getElementById('crop_soil_type');
-        const seasonDropdown = document.getElementById('crop_season');
-        const waterDropdown = document.getElementById('crop_water');
-        const weatherDropdown = document.getElementById('crop_weather');
-
-        if (soilDropdown) soilDropdown.value = detectedSoil;
-        if (seasonDropdown) seasonDropdown.value = detectedSeason;
-        if (waterDropdown) waterDropdown.value = detectedWater;
-        if (weatherDropdown) weatherDropdown.value = detectedWeather;
-
-        // Run recommendation logic
-        const inputs = {
-            soil_type: detectedSoil,
-            season: detectedSeason,
-            water: detectedWater,
-            health: document.getElementById('crop_health')?.value || "Average",
-            weather: detectedWeather,
-            districtName: districtObj.name
-        };
-
-        // Validate the database is available
-        if (!window.cropSuitabilityDatabase || Object.keys(window.cropSuitabilityDatabase).length === 0) {
-            throw new Error("Crop database not loaded. Please refresh the page.");
-        }
-
-        // Calculate suitability scores for all crops
-        const results = Object.keys(window.cropSuitabilityDatabase).map(key => {
-            return window.evaluateCropSuitability(key, inputs);
-        }).filter(Boolean);
-
-        if (results.length === 0) {
-            throw new Error("No crop data available for analysis.");
-        }
-
-        // Sort by suitability score descending
-        results.sort((a, b) => b.accuracy - a.accuracy);
-
-        const primaryCrop = results[0];
-        const alternatives = results.slice(1, 4);
-
-        // Save to lastRecommendationDetails
-        window.lastRecommendationDetails = {
-            params: {
-                soil: detectedSoil,
-                season: detectedSeason,
-                water: detectedWater,
-                health: inputs.health,
-                weather: detectedWeather,
-                location: loc
-            },
-            primary: primaryCrop,
-            alternatives: alternatives
-        };
-
-        // Render result
-        window.renderRecommendationResult();
-        window.showNotification(`Data-driven analysis complete for ${districtObj.name} district`, "success");
-
-        // Save recommendation to Firestore (only if logged in)
-        try {
-            if (typeof firebase !== 'undefined') {
-                const currentUser = firebase.auth().currentUser;
-                if (currentUser) {
-                    firebase.firestore().collection('crop_recommendations').add({
-                        userEmail: currentUser.email,
-                        location: loc,
-                        soilType: detectedSoil,
-                        recommendedCrop: primaryCrop.name,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    }).catch(err => console.error("Firestore error saving recommendation:", err));
+        if (data.status === 'success') {
+            displayRecommendation(data);
+            if (data.detected_params) {
+                const params = data.detected_params;
+                const soilDropdown = document.getElementById('crop_soil_type');
+                const seasonDropdown = document.getElementById('crop_season');
+                const weatherDropdown = document.getElementById('crop_weather');
+                if (params.soil && soilDropdown) {
+                    soilDropdown.value = params.soil;
+                }
+                if (params.season && seasonDropdown) {
+                    seasonDropdown.value = params.season;
+                }
+                if (params.weather && weatherDropdown) {
+                    weatherDropdown.value = params.weather;
                 }
             }
-        } catch (fbErr) {
-            console.error("Failed to save crop recommendation to Firestore:", fbErr);
+            window.showNotification(`Data-driven analysis complete for ${loc}`, "success");
+        } else {
+            window.showNotification(data.message, "error");
+            resultBox.innerHTML = window.DOMPurify.sanitize(`<div class="empty-state"><i class="fa-solid fa-circle-exclamation"></i><p>${data.message}</p></div>`);
         }
-
-    } catch (err) {
-        console.error("Smart Detect error:", err);
-        window.showNotification("Unable to process recommendations. Please try again.", "error");
-        if (resultBox) resultBox.innerHTML = window.DOMPurify.sanitize(`<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Unable to process recommendations. Please try again.</p></div>`);
+    } catch (e) {
+        window.showNotification("Server error. Check your connection.", "error");
     } finally {
-        // Always hide the loader
-        if (loading) loading.style.display = 'none';
+        loading.style.display = 'none';
     }
 };
 
@@ -1503,90 +1259,45 @@ window.analyzeCrop = async function () {
     const loadText = document.getElementById('loadingText');
     const resultBox = document.getElementById('cropResult');
 
-    // Show loading
-    if (loading) loading.style.display = 'block';
-    if (loadText) loadText.innerText = "Analyzing soil, climate and crop suitability...";
-    if (resultBox) resultBox.innerHTML = window.DOMPurify.sanitize(`<div class="empty-state"><i class="fa-solid fa-microchip fa-spin"></i><p>Analyzing soil, climate and crop suitability...</p></div>`);
+    // If location is provided, try to auto-update soil first for better accuracy
+    if (locInput?.value && locInput.value.length >= 3) {
+        try {
+            const soilRes = await apiFetch(`${API_BASE_URL}/api/get-soil-info`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ location: locInput.value })
+            });
+            const soilData = await soilRes.json();
+            if (soilData.status === 'success' && soilDropdown) {
+                soilDropdown.value = soilData.soil_type;
+                window.showNotification(`Auto-synced soil for ${locInput.value}`, "info");
+            }
+        } catch (e) { /* Fallback to manual dropdown selection */ }
+    }
+
+    loading.style.display = 'block';
+    loadText.innerText = "Analyzing manual parameters...";
+    resultBox.innerHTML = window.DOMPurify.sanitize(`<div class="empty-state"><i class="fa-solid fa-microchip fa-spin"></i><p>Processing farm conditions...</p></div>`);
 
     try {
-        await new Promise(resolve => setTimeout(resolve, 600));
-
-        const loc = locInput?.value || "";
-        const districtObj = window.parseDistrictFromLocation(loc);
-        const districtName = districtObj ? districtObj.name : "Tiruvannamalai";
-
-        const inputs = {
-            soil_type: soilDropdown?.value || "Black Soil",
-            season: document.getElementById('crop_season')?.value || "Rainy",
-            water: document.getElementById('crop_water')?.value || "Medium",
-            health: document.getElementById('crop_health')?.value || "Average",
-            weather: document.getElementById('crop_weather')?.value || "Pleasant",
-            districtName: districtName
-        };
-
-        // Validate the database is available
-        if (!window.cropSuitabilityDatabase || Object.keys(window.cropSuitabilityDatabase).length === 0) {
-            throw new Error("Crop database not loaded. Please refresh the page.");
-        }
-
-        // Calculate suitability scores for all crops
-        const results = Object.keys(window.cropSuitabilityDatabase).map(key => {
-            return window.evaluateCropSuitability(key, inputs);
-        }).filter(Boolean);
-
-        if (results.length === 0) {
-            throw new Error("No crop data available for analysis.");
-        }
-
-        // Sort by suitability score descending
-        results.sort((a, b) => b.accuracy - a.accuracy);
-
-        const primaryCrop = results[0];
-        const alternatives = results.slice(1, 4);
-
-        // Save to lastRecommendationDetails
-        window.lastRecommendationDetails = {
-            params: {
-                soil: inputs.soil_type,
-                season: inputs.season,
-                water: inputs.water,
-                health: inputs.health,
-                weather: inputs.weather,
-                location: loc
-            },
-            primary: primaryCrop,
-            alternatives: alternatives
-        };
-
-        // Render result
-        window.renderRecommendationResult();
-        window.showNotification("Analysis Complete", "success");
-
-        // Save recommendation to Firestore (only if logged in)
-        try {
-            if (typeof firebase !== 'undefined') {
-                const currentUser = firebase.auth().currentUser;
-                if (currentUser) {
-                    firebase.firestore().collection('crop_recommendations').add({
-                        userEmail: currentUser.email,
-                        location: loc,
-                        soilType: inputs.soil_type,
-                        recommendedCrop: primaryCrop.name,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    }).catch(err => console.error("Firestore error saving recommendation:", err));
-                }
-            }
-        } catch (fbErr) {
-            console.error("Failed to save crop recommendation to Firestore:", fbErr);
-        }
-
-    } catch (err) {
-        console.error("Analyze Crop error:", err);
-        window.showNotification("Unable to process recommendations. Please try again.", "error");
-        if (resultBox) resultBox.innerHTML = window.DOMPurify.sanitize(`<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Unable to process recommendations. Please try again.</p></div>`);
+        const response = await apiFetch(`${API_BASE_URL}/api/recommend`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                soil_type: soilDropdown?.value,
+                season: document.getElementById('crop_season')?.value,
+                water: document.getElementById('crop_water')?.value,
+                health: document.getElementById('crop_health')?.value,
+                weather: document.getElementById('crop_weather')?.value,
+                location: locInput?.value
+            })
+        });
+        const data = await response.json();
+        if (data.status === 'success') displayRecommendation(data);
+    } catch (e) {
+        resultBox.innerHTML = window.DOMPurify.sanitize(`<div class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> Analysis failed.</div>`);
     } finally {
-        // Always hide the loader regardless of success or failure
-        if (loading) loading.style.display = 'none';
+        loading.style.display = 'none';
     }
 };
 
@@ -1597,116 +1308,68 @@ document.getElementById('crop_location')?.addEventListener('keypress', function 
     }
 });
 
-window.changeResultLanguage = function (lang) {
-    window.currentResultLanguage = lang;
-    window.renderRecommendationResult();
-};
-
-window.renderRecommendationResult = function () {
-    const details = window.lastRecommendationDetails;
-    if (!details) return;
-
-    const p = details.primary;
-    const alternatives = details.alternatives;
-    const params = details.params;
-    const lang = window.currentResultLanguage || 'en';
+function displayRecommendation(data) {
+    const p = data.primary_crop;
+    const alts = data.alternatives;
+    const params = data.detected_params || {};
     const resultBox = document.getElementById('cropResult');
-    if (!resultBox) return;
 
-    let cropName = lang === 'ta' ? p.nameTam : p.nameEng;
-    let mappedText = '';
-    if (params.soil) {
-        if (lang === 'ta') {
-            mappedText = `பொருத்தப்பட்டது: ${window.translateTanglishText(params.soil)} | ${window.translateTanglishText(params.season)} பருவம்`;
-        } else {
-            const cleanSoil = params.soil.split(' (')[0];
-            const cleanSeason = params.season.split(' (')[0];
-            mappedText = `Mapped: ${cleanSoil} | ${cleanSeason} Season`;
-        }
-    }
-
-    let reasoningText = lang === 'ta' ? p.reasoningTam || p.reasoning : p.reasoning;
-
-    const accuracyBadge = `${p.accuracy}% ${lang === 'ta' ? 'பொருத்தம்' : 'Match'}`;
-    const topChoiceLabel = lang === 'ta' ? 'சிறந்த தேர்வு 🌱' : 'Top Choice 🌱';
-
-    const yieldVal = p.expected_yield.split(' ')[0];
-    const yieldLabel = lang === 'ta' ? 'எதிர்பார்க்கப்படும் மகசூல்' : 'Exp. Yield';
-    const yieldDisplay = lang === 'ta' ? `ஏக்கருக்கு ${yieldVal} டன்` : p.expected_yield;
-
-    const mandiLabel = lang === 'ta' ? 'சந்தை விலை' : 'Mandi Price';
-    const mandiDisplay = lang === 'ta' ? `₹ ${parseInt(p.mandi_price).toLocaleString('en-IN')} / குவிண்டால்` : `₹ ${parseInt(p.mandi_price).toLocaleString('en-IN')}/q`;
-
-    const expertHeader = lang === 'ta' ? 'நிபுணர் ஆலோசனை:' : 'Expert Advice:';
-    const expertAdviceText = lang === 'ta' ? p.expert_tip : p.expert_tip_eng;
-
-    const alternativesHeader = lang === 'ta' ? 'மாற்றுப் பயிர்கள்' : 'Alternatives';
-
+    resultBox.className = '';
+    const cleanPrice = p.mandi_price ? p.mandi_price.replace(/[₹\s/q]+/g, '').trim() : '';
     let html = `
-        <div class="result-card primary-recommendation" style="position: relative; background: linear-gradient(to bottom, #f0fdf4, #ffffff); border: 2px solid #10b981; border-radius: 20px; padding: 2.5rem 1.5rem 1.5rem; text-align: center; box-shadow: 0 20px 40px rgba(16, 185, 129, 0.1);">
-            <div class="accuracy-badge" style="position: absolute; top: 15px; right: 15px; background: var(--primary); color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);">${accuracyBadge}</div>
-            
-            <div style="margin-top: 15px; margin-bottom: 15px; display: inline-flex; background: #e5e7eb; border-radius: 20px; padding: 2px; gap: 2px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);">
-                <button class="lang-toggle-btn lang-btn-en" data-lang="en" style="border: none; outline: none; background: ${lang === 'en' ? '#10b981' : 'transparent'}; color: ${lang === 'en' ? 'white' : '#4b5563'}; padding: 5px 12px; border-radius: 18px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; ${lang === 'en' ? 'box-shadow: 0 1px 3px rgba(0,0,0,0.15);' : ''}">English</button>
-                <button class="lang-toggle-btn lang-btn-ta" data-lang="ta" style="border: none; outline: none; background: ${lang === 'ta' ? '#10b981' : 'transparent'}; color: ${lang === 'ta' ? 'white' : '#4b5563'}; padding: 5px 12px; border-radius: 18px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; ${lang === 'ta' ? 'box-shadow: 0 1px 3px rgba(0,0,0,0.15);' : ''}">தமிழ்</button>
+        <div class="result-card primary-recommendation">
+            <div class="accuracy-badge">${p.accuracy}% Match</div>
+            <div class="voice-btn" onclick="window.speakResults('${p.name.split(' (')[0]}')">
+                <i class="fa-solid fa-volume-high"></i> Listen
             </div>
-            <br>
             
-            <span style="background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">${topChoiceLabel}</span>
-            <h2 style="color: var(--secondary); margin: 10px 0 5px 0; font-size: 1.8rem;">${cropName}</h2>
+            <span style="background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Top Choice 🌱</span>
+            <h2 style="color: var(--secondary); margin: 10px 0 5px 0; font-size: 1.8rem;">${p.name}</h2>
             
-            ${mappedText ? `<p style="font-size:0.85rem; color:var(--primary); font-weight:600; margin-bottom:10px;">${mappedText}</p>` : ''}
+            ${params.soil ? `<p style="font-size:0.85rem; color:var(--primary); font-weight:600; margin-bottom:10px;">Mapped: ${params.soil} | ${params.season} Season</p>` : ''}
             
-            <p style="margin-bottom: 20px; font-style: italic; color: var(--text-muted); font-size: 1rem;">"${reasoningText}"</p>
+            <p style="margin-bottom: 20px; font-style: italic; color: var(--text-muted); font-size: 1rem;">"${p.reasoning}"</p>
             
-            <div class="result-info-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0;">
-                <div class="info-stat" style="background: #ffffff; padding: 12px; border-radius: 12px; border: 1px solid var(--border); display: flex; align-items: center; gap: 12px; text-align: left;">
-                    <i class="fa-solid fa-chart-line" style="color: var(--primary); font-size: 1.2rem;"></i>
+            <div class="result-info-grid">
+                <div class="info-stat">
+                    <i class="fa-solid fa-chart-line"></i>
                     <div>
-                        <span class="label" style="display: block; font-size: 0.75rem; color: var(--text-muted);">${yieldLabel}</span>
-                        <span class="val" style="display: block; font-weight: 700; color: var(--secondary); font-size: 1rem;">${yieldDisplay}</span>
+                        <span class="label">Exp. Yield</span>
+                        <span class="val">${p.expected_yield}</span>
                     </div>
                 </div>
-                <div class="info-stat" style="background: #ffffff; padding: 12px; border-radius: 12px; border: 1px solid var(--border); display: flex; align-items: center; gap: 12px; text-align: left;">
-                    <i class="fa-solid fa-indian-rupee-sign" style="color: var(--primary); font-size: 1.2rem;"></i>
+                <div class="info-stat">
+                    <i class="fa-solid fa-indian-rupee-sign"></i>
                     <div>
-                        <span class="label" style="display: block; font-size: 0.75rem; color: var(--text-muted);">${mandiLabel}</span>
-                        <span class="val" style="display: block; font-weight: 700; color: var(--secondary); font-size: 1rem;">${mandiDisplay}</span>
+                        <span class="label">Mandi Price</span>
+                        <span class="val">₹ ${cleanPrice}/q</span>
                     </div>
                 </div>
             </div>
 
-            <div class="expert-box" style="background: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 8px; text-align: left; margin: 20px 0;">
+            <div class="expert-box">
                 <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
                     <i class="fa-solid fa-user-doctor" style="color:var(--primary)"></i>
-                    <strong style="color:var(--secondary)">${expertHeader}</strong>
+                    <strong style="color:var(--secondary)">Expert Advice:</strong>
                 </div>
-                <p style="font-size: 0.9rem; line-height: 1.5; color: #92400e; margin-bottom: 0;">${expertAdviceText}</p>
+                <p>${p.expert_tip}</p>
             </div>
 
-            <div class="alternatives-section" style="border-top: 1px solid var(--border); padding-top: 20px; margin-top: 20px;">
+            <div class="alternatives-section">
                 <h4 style="text-align:left; color:var(--secondary); margin-bottom:15px; display:flex; align-items:center; gap:8px;">
-                    <i class="fa-solid fa-list-check"></i> ${alternativesHeader}
+                    <i class="fa-solid fa-list-check"></i> Alternatives
                 </h4>
-                <div class="alt-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="alt-grid">
     `;
 
-    alternatives.forEach(alt => {
-        const altCropName = lang === 'ta' ? alt.nameTam : alt.nameEng;
-        const altYieldVal = alt.expected_yield.split(' ')[0];
-        const altYieldDisplay = lang === 'ta' ? `ஏக்கருக்கு ${altYieldVal} டன்` : alt.expected_yield;
-        const altMandiDisplay = lang === 'ta' ? `₹${parseInt(alt.mandi_price).toLocaleString('en-IN')}/குவிண்டால்` : `₹${parseInt(alt.mandi_price).toLocaleString('en-IN')}/q`;
-        const altAdviceText = lang === 'ta' ? alt.expert_tip : alt.expert_tip_eng;
-
+    alts.forEach(alt => {
         html += `
-            <div class="alt-card" style="background: #f9fafb; padding: 12px; border-radius: 12px; border: 1px dashed var(--border); text-align: left; transition: all 0.2s;">
+            <div class="alt-card">
                 <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:8px;">
-                    <span class="alt-accuracy" style="background: #e5e7eb; color: #374151; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px;">${alt.accuracy}% ${lang === 'ta' ? 'பொருத்தம்' : 'Match'}</span>
+                    <span class="alt-accuracy">${alt.accuracy}%</span>
                 </div>
-                <h5 style="color:var(--secondary); font-size:1rem; margin-bottom: 5px;">${altCropName}</h5>
-                <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom: 3px;">${yieldLabel}: ${altYieldDisplay}</p>
-                <p style="font-size:0.75rem; color:var(--secondary); font-weight:600; margin-bottom: 5px;">${mandiLabel}: ${altMandiDisplay}</p>
-                <p style="font-size:0.7rem; color:var(--text-muted); margin-top:5px; border-top: 1px solid #e5e7eb; padding-top:5px; margin-bottom: 0;">${altAdviceText}</p>
+                <h5 style="color:var(--secondary); font-size:1rem;">${alt.name.split(' (')[0]}</h5>
+                <p style="font-size:0.75rem; color:var(--text-muted); margin-top:5px;">Yield: ${alt.expected_yield.split(' ')[0]} T/A</p>
             </div>
         `;
     });
@@ -1716,130 +1379,88 @@ window.renderRecommendationResult = function () {
             </div>
         </div>
     `;
-    
     resultBox.innerHTML = window.DOMPurify.sanitize(html);
-
-    // Bind event listeners programmatically
-    const langBtnEn = resultBox.querySelector('.lang-btn-en');
-    if (langBtnEn) langBtnEn.addEventListener('click', () => window.changeResultLanguage('en'));
-
-    const langBtnTa = resultBox.querySelector('.lang-btn-ta');
-    if (langBtnTa) langBtnTa.addEventListener('click', () => window.changeResultLanguage('ta'));
-};
-
-function displayRecommendation(data) {
-    // Left as a compatibility helper in case any external scripts call it
-    const params = data.detected_params || {};
-    const rawPrimaryName = data.primary_crop?.name || "Soybean";
-    let cropKey = "Soybean";
-    for (const key of Object.keys(window.cropDatabase)) {
-        if (rawPrimaryName.toLowerCase().includes(key.toLowerCase())) {
-            cropKey = key;
-            break;
-        }
-    }
-    const p = window.getCropMetrics(cropKey, true);
-    const allAlternativeKeys = Object.keys(window.cropDatabase).filter(key => key !== cropKey);
-    const parsedAlternatives = allAlternativeKeys.map(key => window.getCropMetrics(key, false));
-    parsedAlternatives.sort((a, b) => b.accuracy - a.accuracy);
-    const topAlternatives = parsedAlternatives.slice(0, 3);
-
-    window.lastRecommendationDetails = {
-        params: params,
-        primary: p,
-        alternatives: topAlternatives
-    };
-
-    window.renderRecommendationResult();
     window.showNotification("Best Crop Identified!", "success");
-}
 
-window.predictYield = async function () {
-    const resultBox = document.getElementById('yieldResult');
-    const area = document.getElementById('yield_area').value;
-    const cropSelector = document.getElementById('yield_crop');
-    
-    if (!area) return window.showNotification("Please enter land area", "error");
-    const acreage = parseFloat(area);
-    if (isNaN(acreage) || acreage <= 0) return window.showNotification("Please enter a valid positive land area", "error");
-
-    resultBox.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><p>Calculating yield...</p>`;
-
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    const rawCropVal = cropSelector?.value || "Groundnut (Nilakkadalai)";
-    let cropKey = "Groundnut";
-    for (const key of Object.keys(window.cropSuitabilityDatabase)) {
-        if (rawCropVal.toLowerCase().includes(key.toLowerCase())) {
-            cropKey = key;
-            break;
-        }
-    }
-
-    const locInput = document.getElementById('crop_location')?.value || "";
-    const soilType = document.getElementById('crop_soil_type')?.value || "Red Soil";
-    const season = document.getElementById('crop_season')?.value || "Rainy";
-    const water = document.getElementById('crop_water')?.value || "Medium";
-    const health = document.getElementById('crop_health')?.value || "Average";
-    const weather = document.getElementById('crop_weather')?.value || "Pleasant";
-
-    const districtObj = window.parseDistrictFromLocation(locInput);
-    const districtName = districtObj ? districtObj.name : "Tiruvannamalai";
-
-    const inputs = {
-        soil_type: soilType,
-        season: season,
-        water: water,
-        health: health,
-        weather: weather,
-        districtName: districtName
-    };
-
-    const suitability = window.evaluateCropSuitability(cropKey, inputs);
-    const yieldPerAcre = parseFloat(suitability.expected_yield);
-    const totalYield = (yieldPerAcre * acreage).toFixed(1);
-    
-    const mandiPrice = parseInt(suitability.mandi_price);
-    const totalYieldQuintals = totalYield * 10;
-    const totalRevenue = Math.round(totalYieldQuintals * mandiPrice);
-    
-    const baselineCostPerAcre = window.cropSuitabilityDatabase[cropKey].basePrice * window.cropSuitabilityDatabase[cropKey].baseYield * 3.5;
-    const totalCost = Math.round(baselineCostPerAcre * acreage);
-    const estimatedProfit = Math.max(0, totalRevenue - totalCost);
-
-    const profitDisplay = `₹ ${estimatedProfit.toLocaleString('en-IN')}`;
-    const expectedYieldDisplay = `${totalYield} Tons`;
-
-    resultBox.className = '';
-    resultBox.innerHTML = window.DOMPurify.sanitize(`
-        <div class="result-card" style="background:#FFFBF1; border-color:#F59E0B">
-            <i class="fa-solid fa-boxes-stacked" style="font-size: 2rem; color: #F59E0B; margin-bottom: 10px;"></i>
-            <h4 style="color: #D97706">Expected Yield: ${expectedYieldDisplay}</h4>
-            <p><strong>Calculated at:</strong> ${yieldPerAcre.toFixed(2)} Tons/Acre for ${acreage} Acres</p>
-            <p><strong>Soil Suitability Match:</strong> ${suitability.accuracy}%</p>
-            <p><strong>Estimated Gross Revenue:</strong> ₹ ${totalRevenue.toLocaleString('en-IN')}</p>
-            <p style="font-weight: 600; color: #16a34a; margin-top: 5px;">Estimated Profit: ${profitDisplay}</p>
-        </div>
-    `);
-    window.showNotification("Yield Calculated", "success");
-
+    // Save recommendation to Firestore (only if logged in)
     try {
         if (typeof firebase !== 'undefined') {
             const currentUser = firebase.auth().currentUser;
             if (currentUser) {
-                firebase.firestore().collection('yield_predictions').add({
+                firebase.firestore().collection('crop_recommendations').add({
                     userEmail: currentUser.email,
-                    crop: rawCropVal,
-                    landArea: acreage,
-                    predictedYield: expectedYieldDisplay,
-                    estimatedProfit: profitDisplay,
+                    location: document.getElementById('crop_location')?.value || "",
+                    soilType: params.soil || document.getElementById('crop_soil_type')?.value || "Unknown",
+                    recommendedCrop: p.name,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                }).catch(err => console.error("Firestore error saving yield prediction:", err));
+                }).catch(err => console.error("Firestore error saving recommendation:", err));
             }
         }
     } catch (fbErr) {
-        console.error("Failed to save yield prediction to Firestore:", fbErr);
+        console.error("Failed to save crop recommendation to Firestore:", fbErr);
+    }
 }
+
+window.speakResults = function (text) {
+    if ('speechSynthesis' in window) {
+        const msg = new SpeechSynthesisUtterance();
+        msg.text = `The best crop for your land is ${text}. Check the expert advice for more details.`;
+        msg.rate = 0.9;
+        window.speechSynthesis.speak(msg);
+        window.showNotification("Reading results...", "info");
+    } else {
+        window.showNotification("Voice support not available in this browser", "error");
+    }
+};
+
+window.predictYield = async function () {
+    const resultBox = document.getElementById('yieldResult');
+    const area = document.getElementById('yield_area').value;
+
+    if (!area) return window.showNotification("Enter area", "error");
+
+    resultBox.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><p>Calculating yield...</p>`;
+
+    try {
+        const response = await apiFetch(`${API_BASE_URL}/api/predict`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ area })
+        });
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            resultBox.className = '';
+            resultBox.innerHTML = window.DOMPurify.sanitize(`
+                <div class="result-card" style="background:#FFFBF1; border-color:#F59E0B">
+                    <i class="fa-solid fa-boxes-stacked" style="font-size: 2rem; color: #F59E0B; margin-bottom: 10px;"></i>
+                    <h4 style="color: #D97706">Expected Yield: ${data.expected_yield}</h4>
+                    <p>Estimated Profit: ${data.profit_est}</p>
+                </div>
+            `);
+            window.showNotification("Yield Calculated", "info");
+
+            // Save to Firestore (only if logged in)
+            try {
+                if (typeof firebase !== 'undefined') {
+                    const currentUser = firebase.auth().currentUser;
+                    if (currentUser) {
+                        firebase.firestore().collection('yield_predictions').add({
+                            userEmail: currentUser.email,
+                            crop: document.getElementById('yield_crop')?.value || "Unknown",
+                            landArea: parseFloat(area) || 0,
+                            predictedYield: data.expected_yield,
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        }).catch(err => console.error("Firestore error saving yield prediction:", err));
+                    }
+                }
+            } catch (fbErr) {
+                console.error("Failed to save yield prediction to Firestore:", fbErr);
+            }
+        }
+    } catch (e) {
+        resultBox.innerHTML = `<p style="color:red">Server Error</p>`;
+    }
 };
 
 window.scanDisease = async function () {
