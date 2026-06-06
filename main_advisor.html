@@ -72,6 +72,13 @@
                     <h2 id="pageTitle">Dashboard Overview</h2>
                 </div>
                 <div class="topbar-right">
+                    <div class="language-select-wrapper" style="margin-right: 15px; display: flex; align-items: center;">
+                        <i class="fa-solid fa-globe" style="margin-right: 6px; color: var(--text-muted);"></i>
+                        <select id="languageSelector" style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: white; font-weight: 500; font-size: 0.9rem; cursor: pointer; color: var(--text-main);">
+                            <option value="en">English</option>
+                            <option value="ta">தமிழ் (Tamil)</option>
+                        </select>
+                    </div>
                     <div class="notification-icon" id="notificationBell">
                         <i class="fa-regular fa-bell"></i>
                         <span class="badge" id="notificationBadge">4</span>
@@ -199,55 +206,95 @@
                             <form id="cropForm">
                                 <div class="form-row">
                                     <div class="input-group">
-                                        <label>Soil Type</label>
+                                        <label>Soil Type (மண் வகை)</label>
                                         <select id="crop_soil_type" name="soil_type">
-                                            <option value="Black Soil">Black Soil (Karichal)</option>
-                                            <option value="Alluvial Soil">Alluvial Soil (Vandhal)</option>
-                                            <option value="Red Soil">Red Soil (Semman)</option>
-                                            <option value="Sandy Soil">Sandy Soil (Manal)</option>
-                                            <option value="Loamy Soil">Loamy Soil (Loamy)</option>
+                                            <option value="Black Soil">Black Soil (கருப்பு மண்)</option>
+                                            <option value="Red Soil">Red Soil (செம்மண்)</option>
+                                            <option value="Sandy Soil">Sandy Soil (மணல் மண்)</option>
+                                            <option value="Clay Soil">Clay Soil (களிமண்)</option>
+                                            <option value="Loamy Soil">Loamy Soil (வண்டல் மண்)</option>
                                         </select>
                                     </div>
                                     <div class="input-group">
-                                        <label>Current Season</label>
+                                        <label>Current Season (தற்போதைய பருவம்)</label>
                                         <select id="crop_season" name="season">
-                                            <option value="Rainy">Kharif (Rainy / ஆடிப் பட்டம்)</option>
-                                            <option value="Winter">Rabi (Winter / புரட்டாசிப் பட்டம்)</option>
-                                            <option value="Summer">Zaid (Summer / சித்திரைப் பட்டம்)</option>
+                                            <option value="Rainy">Kharif Season (காரிப் பருவம்)</option>
+                                            <option value="Winter">Rabi Season (ராபி பருவம்)</option>
+                                            <option value="Summer">Summer Season (கோடை பருவம்)</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="input-group">
-                                        <label>Water Availability</label>
+                                        <label>Water Availability (நீர் கிடைக்கும் நிலை)</label>
                                         <select id="crop_water" name="water">
-                                            <option value="Low">Low (Rain-fed / Dry)</option>
-                                            <option value="Medium" selected>Medium (Partial Irrigation)</option>
-                                            <option value="High">High (Well Irrigated)</option>
+                                            <option value="Low">Low Water Availability (குறைந்த நீர் கிடைக்கும் நிலை)</option>
+                                            <option value="Medium" selected>Medium Water Availability (மிதமான நீர் கிடைக்கும் நிலை)</option>
+                                            <option value="High">High Water Availability (அதிக நீர் கிடைக்கும் நிலை)</option>
                                         </select>
                                     </div>
                                     <div class="input-group">
-                                        <label>Soil Health (Fertility)</label>
+                                        <label>Soil Health (மண் வளம்)</label>
                                         <select id="crop_health" name="health">
-                                            <option value="Poor">Poor (Needs Manure)</option>
-                                            <option value="Average" selected>Average (Regular)</option>
-                                            <option value="Rich">Rich (Highly Fertile)</option>
+                                            <option value="Poor">Low Soil Fertility (குறைந்த மண் வளம்)</option>
+                                            <option value="Average" selected>Medium Soil Fertility (மிதமான மண் வளம்)</option>
+                                            <option value="Rich">High Soil Fertility (அதிக மண் வளம்)</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="input-group">
-                                        <label>Weather Feeling</label>
+                                        <label>Weather Condition (வானிலை நிலை)</label>
                                         <select id="crop_weather" name="weather">
-                                            <option value="Cool">Cool / Cold</option>
-                                            <option value="Pleasant" selected>Pleasant / Normal</option>
-                                            <option value="Hot">Hot / Very Warm</option>
+                                            <option value="Sunny" selected>Sunny (வெயிலான வானிலை)</option>
+                                            <option value="Cloudy">Cloudy (மேகமூட்டமான வானிலை)</option>
+                                            <option value="Rainy">Rainy (மழைக்காலம்)</option>
+                                            <option value="Humid">Humid (ஈரப்பதம்)</option>
                                         </select>
                                     </div>
                                     <div class="input-group">
-                                        <label for="crop_location">Your Location</label>
+                                        <label for="crop_location">District (மாவட்டம்)</label>
                                         <div style="display: flex; gap: 8px;">
-                                            <input type="text" id="crop_location" placeholder="e.g. Tamil Nadu, India" style="flex: 1;">
+                                            <select id="crop_location" name="location" style="flex: 1;">
+                                                <option value="Ariyalur">Ariyalur (அரியலூர்)</option>
+                                                <option value="Chengalpattu">Chengalpattu (செங்கல்பட்டு)</option>
+                                                <option value="Chennai">Chennai (சென்னை)</option>
+                                                <option value="Coimbatore" selected>Coimbatore (கோயம்புத்தூர்)</option>
+                                                <option value="Cuddalore">Cuddalore (கடலூர்)</option>
+                                                <option value="Dharmapuri">Dharmapuri (தர்மபுரி)</option>
+                                                <option value="Dindigul">Dindigul (திண்டுக்கல்)</option>
+                                                <option value="Erode">Erode (ஈரோடு)</option>
+                                                <option value="Kallakurichi">Kallakurichi (கள்ளக்குறிச்சி)</option>
+                                                <option value="Kanchipuram">Kanchipuram (காஞ்சிபுரம்)</option>
+                                                <option value="Kanniyakumari">Kanniyakumari (கன்னியாகுமரி)</option>
+                                                <option value="Karur">Karur (கரூர்)</option>
+                                                <option value="Krishnagiri">Krishnagiri (கிருஷ்ணகிரி)</option>
+                                                <option value="Madurai">Madurai (மதுரை)</option>
+                                                <option value="Mayiladuthurai">Mayiladuthurai (மயிலாடுதுறை)</option>
+                                                <option value="Nagapattinam">Nagapattinam (நாகப்பட்டினம்)</option>
+                                                <option value="Namakkal">Namakkal (நாமக்கல்)</option>
+                                                <option value="Nilgiris">Nilgiris (நீலகிரி)</option>
+                                                <option value="Perambalur">Perambalur (பெரம்பலூர்)</option>
+                                                <option value="Pudukkottai">Pudukkottai (புதுக்கோட்டை)</option>
+                                                <option value="Ramanathapuram">Ramanathapuram (இராமநாதபுரம்)</option>
+                                                <option value="Ranipet">Ranipet (ராணிப்பேட்டை)</option>
+                                                <option value="Salem">Salem (சேலம்)</option>
+                                                <option value="Sivaganga">Sivaganga (சிவகங்கை)</option>
+                                                <option value="Tenkasi">Tenkasi (தென்காசி)</option>
+                                                <option value="Thanjavur">Thanjavur (தஞ்சாவூர்)</option>
+                                                <option value="Theni">Theni (தேனி)</option>
+                                                <option value="Thoothukudi">Thoothukudi (தூத்துக்குடி)</option>
+                                                <option value="Tiruchirappalli">Tiruchirappalli (திருச்சிராப்பள்ளி)</option>
+                                                <option value="Tirunelveli">Tirunelveli (திருநெல்வேலி)</option>
+                                                <option value="Tirupathur">Tirupathur (திருப்பத்தூர்)</option>
+                                                <option value="Tiruppur">Tiruppur (திருப்பூர்)</option>
+                                                <option value="Tiruvallur">Tiruvallur (திருவள்ளூர்)</option>
+                                                <option value="Tiruvannamalai">Tiruvannamalai (திருவண்ணாமலை)</option>
+                                                <option value="Tiruvarur">Tiruvarur (திருவாரூர்)</option>
+                                                <option value="Vellore">Vellore (வேலூர்)</option>
+                                                <option value="Viluppuram">Viluppuram (விழுப்புரம்)</option>
+                                                <option value="Virudhunagar">Virudhunagar (விருதுநகர்)</option>
+                                            </select>
                                             <button type="button" onclick="window.detectLocation()" 
                                                 style="width: 45px; background: #ecfdf5; border: 1px solid #10b981; color: #10b981; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center;"
                                                 title="Detect My Location">
@@ -287,23 +334,23 @@
                             <form id="yieldForm">
                                 <div class="form-row">
                                     <div class="input-group">
-                                        <label>Selected Crop</label>
+                                        <label>Selected Crop (தேர்ந்தெடுக்கப்பட்ட பயிர்)</label>
                                         <select id="yield_crop" name="crop">
-                                            <option value="Groundnut (Nilakkadalai)">Groundnut</option>
-                                            <option value="Mustard (Kadugu)">Mustard</option>
-                                            <option value="Soybean">Soybean</option>
-                                            <option value="Sunflower (Suryagandhi)">Sunflower</option>
-                                            <option value="Sesame (Ellu)">Sesame</option>
-                                            <option value="Safflower (Kusuma)">Safflower</option>
-                                            <option value="Niger seed (Uchellu)">Niger seed</option>
-                                            <option value="Castor seed (Amanakku)">Castor seed</option>
-                                            <option value="Linseed (Alivithai)">Linseed</option>
+                                            <option value="Groundnut">Groundnut (நிலக்கடலை)</option>
+                                            <option value="Mustard">Mustard (கடுகு)</option>
+                                            <option value="Soybean">Soybean (சோயாபீன்ஸ்)</option>
+                                            <option value="Sunflower">Sunflower (சூரியகாந்தி)</option>
+                                            <option value="Sesame">Sesame (எள்)</option>
+                                            <option value="Safflower">Safflower (காசுமலர்)</option>
+                                            <option value="Niger seed">Niger seed (உச்செள்ளு)</option>
+                                            <option value="Castor seed">Castor seed (ஆமணக்கு)</option>
+                                            <option value="Linseed">Linseed (ஆளிவிதை)</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="input-group">
-                                        <label>Area (in Acres)</label>
+                                        <label>Area (in Acres) (பரப்பளவு ஏக்கரில்)</label>
                                         <input type="number" id="yield_area" name="area" placeholder="10" min="0.1" step="0.1">
                                     </div>
                                 </div>
